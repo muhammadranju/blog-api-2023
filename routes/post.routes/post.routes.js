@@ -1,15 +1,30 @@
 const router = require("express").Router();
 
-router.get("/articles/:id");
-router.get("/articles");
+const Authentication = require("../../middleware/authentication.middleware/authentication.middleware");
 
-router.get("/articles/:id/comment");
-router.post("/articles/:id/comment");
-router.get("/articles/:id/author");
+const controller = require("../../controller/post.controller/post.controller");
+router.get("/articles", controller.getArticlesController);
+router.get("/articles/:id", controller.getSingleArticleController);
 
-router.post("/articles");
-router.put("/articles/:id");
-router.patch("/articles/:id");
-router.delete("/articles/:id");
+// router.get("/articles/:id/comment",controller.);
+// router.post("/articles/:id/comment"controller.);
+// router.get("/articles/:id/author"controller.);
+
+router.post("/articles", Authentication, controller.postArticleController);
+router.put(
+  "/articles/:id",
+  Authentication,
+  controller.putSingleArticlesUpdateController
+);
+router.patch(
+  "/articles/:id",
+  Authentication,
+  controller.patchSingleArticleUpdateController
+);
+router.delete(
+  "/articles/:id",
+  Authentication,
+  controller.deleteSingleArticlesDeleteController
+);
 
 module.exports = router;

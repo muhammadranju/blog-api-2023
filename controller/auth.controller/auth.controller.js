@@ -1,23 +1,20 @@
+const { validationResult } = require("express-validator");
 const hash = require("../../utils/password_bcrypt.utils/password_bcrypt.utils");
 const lowercaseText = require("../../utils/lowercase_text.utils/lowercase_text.utils");
 const Service = require("../../service/DB_Services.service/DB_Services.service");
 const jwt = require("../../service/jwt_generator.service/jwt_generator.service");
 const response = require("../../utils/response.utils/response.utils");
 const emailSend = require("../../service/emailSend.service/emailSend.service");
-
-const User = require("../../models/user.models");
+const errorFormatter = require("../../utils/errorFormatter/errorFormatter");
 
 const postSignupController = async (req, res, next) => {
   try {
-    const { username, fullName, email, password, roll } = req.body;
+    const errors = validationResult(req).formatWith(errorFormatter);
+    if (!errors.isEmpty()) {
+      return res.status(400).json({ error: errors.mapped() });
+    }
 
-    if (!username || !fullName || !email || !password) {
-      return response(res, "All fields are required!", 400);
-    }
-    const findUserEmail = await Service.findOne({ email }, "signup");
-    if (findUserEmail) {
-      return response(res, "This email already exits.", 400);
-    }
+    const { username, fullName, email, password } = req.body;
 
     const user = await Service.createDocument(
       {
@@ -25,7 +22,6 @@ const postSignupController = async (req, res, next) => {
         fullName,
         email: lowercaseText(email),
         password: await hash.generateBcryptPassword(password),
-        roll,
       },
       "user"
     );
@@ -39,20 +35,25 @@ const postSignupController = async (req, res, next) => {
         "You must be verify your email before you login, Verify link will be expired in 30 minutes.",
     });
   } catch (error) {
+    console.log(error.message);
     next(error);
   }
 };
 
-const postLoginController = async (req, res) => {
+const postLoginController = async (req, res, next) => {
   try {
+    const errors = validationResult(req).formatWith(errorFormatter);
+    if (!errors.isEmpty()) {
+      return res.status(400).json({ error: errors.mapped() });
+    }
     const { email, password } = req.body;
 
-    if (!email || !password) {
-      return response(res, "All fields are required!", 400);
-    }
+    // if (!email || !password) {
+    //   return response(res, "All fields are required!", 400);
+    // }
     const findUserEmail = await Service.findOne({ email }, "user");
     if (!findUserEmail) {
-      return response(res, "Invalid user name or password.", 400);
+      return response(res, "Invalid credential, email or password.", 400);
     }
     if (findUserEmail.isVerify === false) {
       return response(
@@ -61,11 +62,15 @@ const postLoginController = async (req, res) => {
         400
       );
     }
+
     const compareBcryptPassword = await hash.compareBcryptPassword(
       password,
       findUserEmail.password
     );
 
+    if (!compareBcryptPassword) {
+      return response(res, "Invalid credential, email or password.", 400);
+    }
     const payload = {
       user_id: findUserEmail._id,
       name: findUserEmail.fullName,
@@ -76,36 +81,37 @@ const postLoginController = async (req, res) => {
     return res.json({
       message: "User login successfully!",
       token,
-      status: compareBcryptPassword,
+      //   status: compareBcryptPassword,
     });
   } catch (error) {
     console.log(error);
+    next(error);
   }
 };
 
-const getVerifyEmailController = async (req, res, next) => {
+const getVerifyEmailController = async (req, res, _next) => {
   try {
     const token = req.params.verify;
     if (token === undefined) {
       return response(res, "Unauthorized access", 401);
     }
     const { email } = jwt.jwtVerifyToken(token);
-    console.log(email);
     const findUser = await Service.findOne({ email }, "user");
-
     if (findUser.isVerify) {
-      return response(res, "Email is already verify.", 200);
+      return response(res, "Email is already verify.", 400);
     }
 
-    await User.findOneAndUpdate(
-      { email },
-      { $set: { isVerify: true } },
-      { new: false }
+    const isVerify = await Service.verifiedLink(
+      { _id: findUser._id },
+      { isVerify: true },
+      "user",
+      "findById"
     );
-    return res.status(203).json({ message: "Successfully email verified.✅" });
+    console.log(isVerify);
+    return response(res, "Successfully email verified.✅", 200);
   } catch (error) {
-    return response(res, "Your verify link was expired!!", 400);
-    next(error);
+    console.log(error.message);
+    return response(res, `Your verify token link was expired!!`, 400);
   }
 };
 

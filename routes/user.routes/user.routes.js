@@ -1,9 +1,19 @@
-// const router = require("express").Router();
-// const controller = require("../../controller/user.controller/user.controller");
+const router = require("express").Router();
+const controller = require("../../controller/user.controller/user.controller");
+const Authentication = require("../../middleware/authentication.middleware/authentication.middleware");
 
-// router.get("/verify/:verify", controller.getVerifyEmailController);
-// router.post("/signup", controller.postSignupController);
+router.get("/user", controller.getUserController);
+router.get("/user/:userId", controller.getUserSingleController);
+router.post("/user", Authentication, controller.postUserCreateController);
+router.put("/user/:userId", Authentication, controller.putUserUpdateController);
+router.patch(
+  "/user/:userId",
+  Authentication,
+  controller.patchUserUpdateController
+);
+router.put(
+  "/user/:userId/change-password",
+  controller.userChangePasswordController
+);
 
-// router.post("/login", controller.postLoginController);
-
-// module.exports = router;
+module.exports = router;

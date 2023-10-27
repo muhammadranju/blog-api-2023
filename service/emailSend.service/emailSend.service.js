@@ -1,6 +1,4 @@
 const nodemailer = require("nodemailer");
-const { v4: uuid } = require("uuid");
-const hashURL = uuid().concat("-", uuid());
 const jwt = require("../jwt_generator.service/jwt_generator.service");
 
 const transporter = nodemailer.createTransport({

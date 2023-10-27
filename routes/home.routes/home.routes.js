@@ -1,8 +1,15 @@
 const router = require("express").Router();
-const Auth = require("../../middleware/authentication.middleware/authentication.middleware");
+const Authentication = require("../../middleware/authentication.middleware/authentication.middleware");
 
-router.get("/", Auth, (req, res) => {
-  res.json({ message: "hello" });
+const Service = require("../../service/DB_Services.service/DB_Services.service");
+router.get("/", Authentication, async (req, res) => {
+  const data = await Service.find(
+    "username email role",
+    10,
+    { _id: -1 },
+    "user"
+  );
+  res.json({ message: "hello", data });
 });
 
 module.exports = router;
