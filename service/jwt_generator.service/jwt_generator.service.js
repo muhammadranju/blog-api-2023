@@ -5,9 +5,9 @@ const jwt = require("jsonwebtoken");
 //     roll: compareBcryptPassword.roll,
 //   };
 
-function jwtGeneratorSignToken(payload) {
+function jwtGeneratorSignToken(payload, expiresDate = "1h") {
   const token = jwt.sign(payload, process.env.JWT_SECRET_KEY, {
-    expiresIn: "1h",
+    expiresIn: expiresDate,
   });
   return token;
 }

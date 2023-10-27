@@ -1,7 +1,7 @@
 const router = require("express").Router();
-const Auth = require("../../service/authentication_authorization.service/authentication_authorization.service");
+const Auth = require("../../middleware/authentication.middleware/authentication.middleware");
 
-router.get("/", Auth.authentication, (req, res) => {
+router.get("/", Auth, (req, res) => {
   res.json({ message: "hello" });
 });
 

@@ -8,7 +8,7 @@ app.use([
     next();
   },
   (err, req, res, next) => {
-    res.status(404).json({ status: 404, message: "Something went wrong." });
+    res.status(500).json({ status: 500, message: "Something went wrong." });
   },
 ]);
 
