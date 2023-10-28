@@ -1,11 +1,12 @@
 const { validationResult } = require("express-validator");
-const hash = require("../../utils/password_bcrypt.utils/password_bcrypt.utils");
-const lowercaseText = require("../../utils/lowercase_text.utils/lowercase_text.utils");
-const Service = require("../../service/DB_Services.service/DB_Services.service");
-const jwt = require("../../service/jwt_generator.service/jwt_generator.service");
-const response = require("../../utils/response.utils/response.utils");
-const emailSend = require("../../service/emailSend.service/emailSend.service");
-const errorFormatter = require("../../utils/errorFormatter/errorFormatter");
+
+const hash = require("../../utils/password_bcrypt.utils/password_bcrypt.utils"); // password hash function
+const lowercaseText = require("../../utils/lowercase_text.utils/lowercase_text.utils"); // lowercase function
+const Service = require("../../service/DB_Services.service/DB_Services.service"); // database models service function
+const jwt = require("../../service/jwt_generator.service/jwt_generator.service"); // jwt generator function
+const response = require("../../utils/response.utils/response.utils"); // response handel function
+const emailSend = require("../../service/emailSend.service/emailSend.service"); // email send function
+const errorFormatter = require("../../utils/errorFormatter/errorFormatter"); // error formatter function
 
 const postSignupController = async (req, res, next) => {
   try {
@@ -48,9 +49,6 @@ const postLoginController = async (req, res, next) => {
     }
     const { email, password } = req.body;
 
-    // if (!email || !password) {
-    //   return response(res, "All fields are required!", 400);
-    // }
     const findUserEmail = await Service.findOne({ email }, "user");
     if (!findUserEmail) {
       return response(res, "Invalid credential, email or password.", 400);
@@ -77,11 +75,11 @@ const postLoginController = async (req, res, next) => {
       email: findUserEmail.email,
       isLogin: compareBcryptPassword,
     };
-    const token = jwt.jwtGeneratorSignToken(payload, "1h");
+    const token = jwt.jwtGeneratorSignToken(payload, "1d");
     return res.json({
       message: "User login successfully!",
       token,
-      //   status: compareBcryptPassword,
+      status: compareBcryptPassword,
     });
   } catch (error) {
     console.log(error);
