@@ -9,7 +9,7 @@ const middleware = [
   compression(),
   // userAgent,
   morgan("dev"),
-  rateLimit,
+  // rateLimit,
 ];
 
 module.exports = middleware;
