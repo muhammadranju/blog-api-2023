@@ -32,9 +32,14 @@ const postSignupController = async (req, res, next) => {
       await user.save();
     }
     return res.status(201).json({
-      success: "Signup successfully!",
+      code: 201,
+      message: "Signup successful",
       verify:
         "You must be verify your email before you login, Verify link will be expired in 30 minutes.",
+      links: {
+        self: "/auth/signup",
+        signin: "/auth/signin",
+      },
     });
   } catch (error) {
     console.log(error.message);
