@@ -77,7 +77,7 @@ const postArticleController = async (req, res, next) => {
       },
       "post"
     );
-    method;
+
     await post.save();
     return res.status(201).json({
       code: 201,
