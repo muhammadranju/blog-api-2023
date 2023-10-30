@@ -33,6 +33,7 @@ const userSchema = new Schema(
     status: {
       type: String,
       enum: ["PENDING", "APPROVED", "BLOCK", "DECLINE"],
+      default: "PENDING",
     },
     isVerify: {
       type: Boolean,
@@ -42,5 +43,5 @@ const userSchema = new Schema(
   { timestamps: true }
 );
 
-const Auth = model("Auth", userSchema);
-module.exports = Auth;
+const User = model("User", userSchema);
+module.exports = User;

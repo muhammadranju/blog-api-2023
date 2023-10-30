@@ -1,5 +1,5 @@
 const router = require("express").Router();
-
+const validator = require("../../middleware/validator.middleware/postValidator.middleware");
 const Authentication = require("../../middleware/authentication.middleware/authentication.middleware");
 
 const controller = require("../../controller/post.controller/post.controller");
@@ -10,7 +10,12 @@ router.get("/articles/:id", controller.getSingleArticleController);
 // router.post("/articles/:id/comment"controller.);
 // router.get("/articles/:id/author"controller.);
 
-router.post("/articles", Authentication, controller.postArticleController);
+router.post(
+  "/articles",
+  Authentication,
+  validator.postValidator,
+  controller.postArticleController
+);
 router.put(
   "/articles/:id",
   Authentication,

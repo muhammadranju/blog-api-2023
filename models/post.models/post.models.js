@@ -11,18 +11,31 @@ const postSchema = new Schema(
       type: String,
       require: true,
     },
-    body: {
+    bodyText: {
       type: String,
       require: true,
       trim: true,
     },
-    cover_image: {
+    cover: {
       type: String,
       require: true,
     },
+
+    tags: [
+      {
+        type: String,
+        required: true,
+        lowercase: true,
+      },
+    ],
     status: {
       type: String,
-      enum: ["DRAFT,PUBLISHED,PENDING"],
+      enum: ["draft", "published", "pending"],
+      default: "draft",
+    },
+    authorID: {
+      type: Schema.Types.ObjectId,
+      ref: "User",
     },
   },
   { timestamps: true }

@@ -1,10 +1,21 @@
 require("dotenv").config();
-const { createServer } = require("http");
 const app = require("./app/app");
-const PORT = process.env.PORT || 3030;
-const server = createServer(app);
-require("./DB/connectionDB");
+const http = require("http");
+const connectDB = require("./DB/connectionDB");
 
-server.listen(PORT, () => {
-  console.log(`Server is running on http://localhost:${PORT}`);
-});
+const PORT = process.env.PORT || 3030;
+const server = http.createServer(app);
+
+const start = async () => {
+  try {
+    await connectDB();
+    server.listen(PORT, () => {
+      console.log(`Server is running at http://localhost:${PORT}`);
+    });
+  } catch (e) {
+    console.log("Database Error");
+    console.log(e);
+  }
+};
+
+start();

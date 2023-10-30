@@ -15,13 +15,14 @@ const postSignupController = async (req, res, next) => {
       return res.status(400).json({ error: errors.mapped() });
     }
 
-    const { username, fullName, email, password } = req.body;
+    let { username, fullName, email, password } = req.body;
+    username = username.split(" ").join("").toLowerCase();
 
     const user = await Service.createDocument(
       {
-        username: lowercaseText(username),
+        username,
         fullName,
-        email: lowercaseText(email),
+        email,
         password: await hash.generateBcryptPassword(password),
       },
       "user"

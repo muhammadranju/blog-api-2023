@@ -9,10 +9,11 @@ function userAgent(req, res, next) {
     ) {
       console.log(req.headers["user-agent"]);
       return res.status(200).json({
-        error: {
-          userAgent: req.headers["user-agent"],
-          message: "This user agent not supported!",
-        },
+        message: "Access declined",
+        // error: {
+        //   userAgent: req.headers["user-agent"],
+        //   message: "This user agent not supported!",
+        // },
       });
     }
     return next();

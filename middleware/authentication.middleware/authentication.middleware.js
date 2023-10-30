@@ -17,7 +17,7 @@ async function authentication(req, res, next) {
       return response(res, "Unauthorized token", 401);
       //
     }
-    req.user = await Service.findById({ _id: user_id });
+    req.user = await Service.findById({ _id: user_id }, "user");
     return next();
   } catch (error) {
     return response(res, "Unauthorized token", 401);

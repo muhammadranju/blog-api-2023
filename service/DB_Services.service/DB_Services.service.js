@@ -1,4 +1,4 @@
-const Auth = require("../../models/auth.models/auth.models");
+const User = require("../../models/user.models/user.models");
 const Post = require("../../models/post.models/post.models");
 const Comment = require("../../models/comment.models/comment.models");
 
@@ -17,9 +17,13 @@ const Comment = require("../../models/comment.models/comment.models");
  * @param {*} sort
  * @returns
  */
-async function find(select, limit, sort, finderValue) {
-  const authData = await Auth.find().select(select).limit(limit).sort(sort);
-  const postData = await Post.find().select(select).limit(limit).sort(sort);
+async function find(finderValue, select, limit, sort, populate, popSelect) {
+  const authData = await User.find().select(select).limit(limit).sort(sort);
+  const postData = await Post.find()
+    .select(select)
+    .limit(limit)
+    .sort(sort)
+    .populate(populate, popSelect);
   const commentData = await Comment.find()
     .select(select)
     .limit(limit)
@@ -45,7 +49,7 @@ async function find(select, limit, sort, finderValue) {
  */
 
 async function findOne(value, finderValue) {
-  const authData = await Auth.findOne(value);
+  const authData = await User.findOne(value);
   const postData = await Post.findOne(value);
   const commentData = await Comment.findOne(value);
 
@@ -69,7 +73,7 @@ async function findOne(value, finderValue) {
  */
 
 async function createDocument(object, finderValue) {
-  const authCreateDocuments = new Auth({ ...object });
+  const authCreateDocuments = new User({ ...object });
   const postCreateDocuments = new Post({ ...object });
   const commentCreateDocuments = new Comment({ ...object });
 
@@ -86,7 +90,9 @@ async function createDocument(object, finderValue) {
 }
 
 async function findById(idValue, finderValue) {
-  const authData = await Auth.findById(idValue).select("-password");
+  const authData = await User.findById(idValue).select(
+    "username fullName email role isVerify:"
+  );
   const postData = await Post.findById(idValue);
   const commentData = await Comment.findById(idValue);
 
@@ -112,13 +118,13 @@ async function verifiedLink(idValue, updateValue, finderValue, findBy) {
   if (!finderValue || !findBy) {
     return false;
   }
-  const resultFindById = await Auth.findByIdAndUpdate(
+  const resultFindById = await User.findByIdAndUpdate(
     idValue,
     { ...updateValue },
     { new: true }
   );
 
-  const resultFindByOne = await Auth.findOneAndUpdate(
+  const resultFindByOne = await User.findOneAndUpdate(
     { ...idValue },
     { ...updateValue },
     { new: true }

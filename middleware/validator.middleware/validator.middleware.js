@@ -29,6 +29,20 @@ const signupValidation = [
   //     .isLength({ min: 11 })
   //     .withMessage("Invalid number, Number must be Bangladeshi Number."),
 
+  body("username")
+    .trim()
+    .not()
+    .notEmpty()
+    .withMessage("Email field is required.")
+    .isLength({ max: 40 })
+    .withMessage("Email should be 40 characters only. ")
+    .custom(async (username) => {
+      username = username.split(" ").join("").toLowerCase();
+      const existingUser = await Service.findOne({ username }, "user");
+      if (existingUser) {
+        throw new Error("Username is already an exists.");
+      }
+    }),
   body("email")
     .trim()
     .not()
