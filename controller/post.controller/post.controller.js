@@ -1,10 +1,17 @@
 const { validationResult } = require("express-validator");
+const NodeCache = require("node-cache");
+
 const Service = require("../../service/DB_Services.service/DB_Services.service");
 const errorFormatter = require("../../utils/errorFormatter/errorFormatter");
 const lowercaseText = require("../../utils/lowercase_text.utils/lowercase_text.utils");
+const myCache = new NodeCache({ stdTTL: 60 });
 
 const getArticlesController = async (req, res, next) => {
   try {
+    if (myCache.has("posts")) {
+      console.log("gating from cache");
+      return res.status(200).json(myCache.get("posts"));
+    }
     const posts = await Service.find(
       "post",
       "title title_url bodyText cover tags authorID",
@@ -13,6 +20,22 @@ const getArticlesController = async (req, res, next) => {
       "authorID",
       "username email createdAt updatedAt"
     );
+    myCache.set("posts", {
+      data: posts,
+      pagination: {
+        page: 2,
+        limit: 10,
+        next: 3,
+        prev: 1,
+        totalPage: 5,
+        totalItems: 50,
+      },
+      links: {
+        self: "/articles?page=2&limit=10",
+        next: "/articles?page=3&limit=10",
+        prev: "/articles?page=1&limit=10",
+      },
+    });
     return res.status(200).json({
       data: posts,
       pagination: {
