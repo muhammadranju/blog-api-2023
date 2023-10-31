@@ -2,14 +2,14 @@ const { validationResult } = require("express-validator");
 const NodeCache = require("node-cache");
 const shortId = require("shortid");
 
-const Post = require("../../service/post.service/post.service");
+const Post = require("../../libs/post.libs/post.libs");
 const Service = require("../../service/DB_Services.service/DB_Services.service");
 const errorFormatter = require("../../utils/errorFormatter/errorFormatter");
 const lowercaseText = require("../../utils/lowercase_text.utils/lowercase_text.utils");
-const myCache = new NodeCache({ stdTTL: 60 });
-
-const defaults = require("../../config/defaults");
 const response = require("../../utils/response.utils/response.utils");
+const defaults = require("../../config/defaults");
+
+const myCache = new NodeCache({ stdTTL: 60 });
 
 const getArticlesController = async (req, res, next) => {
   // const page = req.query.page || defaults.page;
@@ -28,6 +28,9 @@ const getArticlesController = async (req, res, next) => {
       search,
     });
 
+    if (posts.length === 0) {
+      return response(res, "This post was not found", 404);
+    }
     return res.status(200).json({
       data: posts,
       pagination: {
@@ -97,6 +100,9 @@ const getSingleArticleController = async (req, res, next) => {
     if (!findOnePost) {
       return response(res, "This post was not found", 400);
     }
+
+    if (findOnePost.status === "draft" || findOnePost.status === "pending") {
+    }
     return res.status(200).json({
       data: findOnePost,
       comments: [],
@@ -124,6 +130,15 @@ const patchSingleArticleUpdateController = async (req, res, next) => {
 };
 const deleteSingleArticlesDeleteController = async (req, res, next) => {
   try {
+    const id = req.params.id;
+    const postDelete = await Post.findPostAndDelete({ id });
+    if (!postDelete) {
+      return response(res, "Post not available", 400);
+    }
+    console.log("Article deleted successfully");
+    return res
+      .status(204)
+      .json({ postDelete, message: "Article deleted successfully" });
   } catch (error) {
     next(error);
   }

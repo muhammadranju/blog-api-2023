@@ -3,19 +3,11 @@ const validator = require("../../middleware/validator.middleware/postValidator.m
 const Authentication = require("../../middleware/authentication.middleware/authentication.middleware");
 
 const controller = require("../../controller/post.controller/post.controller");
-router.get("/articles", controller.getArticlesController);
-router.get("/articles/:id", controller.getSingleArticleController);
 
 // router.get("/articles/:id/comment",controller.);
 // router.post("/articles/:id/comment"controller.);
 // router.get("/articles/:id/author"controller.);
 
-router.post(
-  "/articles",
-  Authentication,
-  validator.postValidator,
-  controller.postArticleController
-);
 router.put(
   "/articles/:id",
   Authentication,
@@ -30,6 +22,15 @@ router.delete(
   "/articles/:id",
   Authentication,
   controller.deleteSingleArticlesDeleteController
+);
+
+router.get("/articles", controller.getArticlesController);
+router.get("/articles/:id", controller.getSingleArticleController);
+router.post(
+  "/articles",
+  Authentication,
+  validator.postValidator,
+  controller.postArticleController
 );
 
 module.exports = router;

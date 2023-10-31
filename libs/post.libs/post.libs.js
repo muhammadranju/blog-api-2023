@@ -38,6 +38,7 @@ const findAllPosts = async ({ limit = 5, page = 1, sort, search = "" }) => {
         { title: { $regex: ".*" + search + ".*", $options: "i" } },
         { title_url: { $regex: ".*" + search + ".*", $options: "i" } },
         { bodyText: { $regex: ".*" + search + ".*", $options: "i" } },
+        { tags: { $regex: ".*" + search + ".*", $options: "i" } },
       ],
     })
       .limit(limit)
@@ -63,12 +64,21 @@ const findAllPosts = async ({ limit = 5, page = 1, sort, search = "" }) => {
 
 const findSinglePost = async ({ id }) => {
   const post = await Post.findOne({
-    $or: [{ _id: id }],
-    $or: [{ title_url: id }],
-    // title_url: id,
+    // $or: [{ _id: id }],
+    // $or: [{ title_url: id }],
+    title_url: id,
   })
     .populate("authorID", "username")
     .select("-__v");
   return post;
 };
-module.exports = { findAllItems, findAllPosts, findSinglePost };
+
+const findPostAndDelete = async ({ id }) => {
+  return await Post.findOneAndDelete({ title_url: id });
+};
+module.exports = {
+  findAllItems,
+  findAllPosts,
+  findSinglePost,
+  findPostAndDelete,
+};
