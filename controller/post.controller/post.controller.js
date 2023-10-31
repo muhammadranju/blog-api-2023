@@ -1,46 +1,38 @@
 const { validationResult } = require("express-validator");
 const NodeCache = require("node-cache");
+const shortId = require("shortid");
 
+const Post = require("../../service/post.service/post.service");
 const Service = require("../../service/DB_Services.service/DB_Services.service");
 const errorFormatter = require("../../utils/errorFormatter/errorFormatter");
 const lowercaseText = require("../../utils/lowercase_text.utils/lowercase_text.utils");
 const myCache = new NodeCache({ stdTTL: 60 });
 
+const defaults = require("../../config/defaults");
+const response = require("../../utils/response.utils/response.utils");
+
 const getArticlesController = async (req, res, next) => {
+  // const page = req.query.page || defaults.page;
+  // const limit = req.query.limit || defaults.limit;
+  // const sortType = req.query.sort_type || defaults.sortType;
+  // const sortBy = req.query.sort_by || defaults.sortBy;
+  // const search = req.query.search || defaults.search;
+
+  const { limit, page, search } = req.query;
+
   try {
-    if (myCache.has("posts")) {
-      console.log("gating from cache");
-      return res.status(200).json(myCache.get("posts"));
-    }
-    const posts = await Service.find(
-      "post",
-      "title title_url bodyText cover tags authorID",
-      10,
-      { _id: -1 },
-      "authorID",
-      "username email createdAt updatedAt"
-    );
-    myCache.set("posts", {
-      data: posts,
-      pagination: {
-        page: 2,
-        limit: 10,
-        next: 3,
-        prev: 1,
-        totalPage: 5,
-        totalItems: 50,
-      },
-      links: {
-        self: "/articles?page=2&limit=10",
-        next: "/articles?page=3&limit=10",
-        prev: "/articles?page=1&limit=10",
-      },
+    const posts = await Post.findAllPosts({
+      page,
+      limit,
+      sort: { updatedAt: -1 },
+      search,
     });
+
     return res.status(200).json({
       data: posts,
       pagination: {
-        page: 2,
-        limit: 10,
+        page,
+        limit,
         next: 3,
         prev: 1,
         totalPage: 5,
@@ -64,7 +56,10 @@ const postArticleController = async (req, res, next) => {
     }
 
     let { title, bodyText, cover, tags } = req.body;
-    const title_url = lowercaseText(title, " ", "_") + Date.now();
+    const title_url =
+      lowercaseText(title, " ", "-").slice(0, 20) + shortId().toLowerCase();
+    console.log(title_url);
+    console.log();
     tags = lowercaseText(tags, " ");
     const post = await Service.createDocument(
       {
@@ -94,8 +89,23 @@ const postArticleController = async (req, res, next) => {
     next(error);
   }
 };
+
 const getSingleArticleController = async (req, res, next) => {
   try {
+    const { id } = req.params;
+    const findOnePost = await Post.findSinglePost({ id });
+    if (!findOnePost) {
+      return response(res, "This post was not found", 400);
+    }
+    return res.status(200).json({
+      data: findOnePost,
+      comments: [],
+      links: {
+        self: "/articles/1",
+        author: "/articles/1/author",
+        comments: "/articles/1/comments",
+      },
+    });
   } catch (error) {
     next(error);
   }

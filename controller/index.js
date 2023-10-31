@@ -9,12 +9,9 @@ const homeController = async (req, res, next) => {
       console.log("gating from cache");
       return res.status(200).json(myCache.get("ranju"));
     }
-    const userData = await Service.find(
-      "username email role",
-      10,
-      { _id: -1 },
-      "user"
-    );
+    const userData = await Service.find("user", "username email role", 10, {
+      _id: -1,
+    });
     // const data = await fetch(url);
     // const userData = await data.json();
     myCache.set("ranju", userData);

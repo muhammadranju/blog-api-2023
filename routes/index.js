@@ -5,5 +5,11 @@ const postRoute = require("./post.routes/post.routes");
 const authRoute = require("./auth.routes/auth.routes");
 const commentRoute = require("./comment.routes/comment.routes");
 
-index.use([homeRoute, postRoute, authRoute, commentRoute]);
+const apiURL = "/api/v1";
+
+index.use(apiURL, homeRoute);
+index.use(apiURL, postRoute);
+index.use(apiURL, authRoute);
+index.use(apiURL, commentRoute);
+// index.use([homeRoute, postRoute, authRoute, commentRoute]);
 module.exports = index;

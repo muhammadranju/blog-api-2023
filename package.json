@@ -23,9 +23,11 @@
     "jsonwebtoken": "^9.0.2",
     "mongoose": "^7.6.3",
     "morgan": "^1.10.0",
+    "nanoid": "^5.0.2",
     "node-cache": "^5.1.2",
     "node-fetch": "^3.3.2",
     "nodemailer": "^6.9.7",
+    "shortid": "^2.2.16",
     "uuid": "^9.0.1"
   }
 }
