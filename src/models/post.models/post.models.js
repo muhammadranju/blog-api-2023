@@ -30,10 +30,10 @@ const postSchema = new Schema(
     ],
     status: {
       type: String,
-      enum: ["draft", "published", "pending"],
-      default: "draft",
+      enum: ["DRAFT", "PUBLISHED", "PENDING"],
+      default: "DRAFT",
     },
-    authorID: {
+    author: {
       type: Schema.Types.ObjectId,
       ref: "User",
     },

@@ -34,6 +34,7 @@ const findAllPosts = async ({ limit = 5, page = 1, sort, search = "" }) => {
   search = search.toLowerCase();
   if (search) {
     return await Post.find({
+      status: "PUBLISHED",
       $or: [
         { title: { $regex: ".*" + search + ".*", $options: "i" } },
         { title_url: { $regex: ".*" + search + ".*", $options: "i" } },
@@ -44,20 +45,23 @@ const findAllPosts = async ({ limit = 5, page = 1, sort, search = "" }) => {
       .limit(limit)
       .skip(skip)
       .sort(sort)
-      .populate("authorID", "username")
+      .populate("author", "username")
       .select("-__v");
   }
 
   const posts = await Post.find({
+    status: "PUBLISHED",
     $or: [
       { title: { $regex: ".*" + search + ".*", $options: "i" } },
       { bodyText: { $regex: ".*" + search + ".*", $options: "i" } },
+      { bodyText: { $regex: ".*" + search + ".*", $options: "i" } },
+      { tags: { $regex: ".*" + search + ".*", $options: "i" } },
     ],
   })
     .limit(limit)
     .skip(skip)
     .sort(sort)
-    .populate("authorID", "username")
+    .populate("author", "username")
     .select("-__v");
   return posts;
 };

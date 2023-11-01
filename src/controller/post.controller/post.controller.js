@@ -7,8 +7,8 @@ const Service = require("../../service/DB_Services.service/DB_Services.service")
 const errorFormatter = require("../../utils/errorFormatter/errorFormatter");
 const lowercaseText = require("../../utils/lowercase_text.utils/lowercase_text.utils");
 const response = require("../../utils/response.utils/response.utils");
-const defaults = require("../../config/defaults");
 
+const defaults = require("../../config/defaults");
 const myCache = new NodeCache({ stdTTL: 60 });
 
 const getArticlesController = async (req, res, next) => {
@@ -31,6 +31,7 @@ const getArticlesController = async (req, res, next) => {
     if (posts.length === 0) {
       return response(res, "This post was not found", 404);
     }
+
     return res.status(200).json({
       data: posts,
       pagination: {
@@ -59,10 +60,12 @@ const postArticleController = async (req, res, next) => {
     }
 
     let { title, bodyText, cover, tags } = req.body;
+
     const title_url =
-      lowercaseText(title, " ", "-").slice(0, 20) + shortId().toLowerCase();
-    console.log(title_url);
-    console.log();
+      lowercaseText(title, " ", "-").slice(0, 20) +
+      "-" +
+      shortId().toLowerCase();
+
     tags = lowercaseText(tags, " ");
     const post = await Service.createDocument(
       {
@@ -71,12 +74,13 @@ const postArticleController = async (req, res, next) => {
         bodyText,
         cover,
         tags,
-        authorID: req.user._id,
+        author: req.user._id,
       },
       "post"
     );
 
     await post.save();
+
     return res.status(201).json({
       code: 201,
       message: "Article created successfully",
@@ -101,8 +105,6 @@ const getSingleArticleController = async (req, res, next) => {
       return response(res, "This post was not found", 400);
     }
 
-    if (findOnePost.status === "draft" || findOnePost.status === "pending") {
-    }
     return res.status(200).json({
       data: findOnePost,
       comments: [],

@@ -2,17 +2,22 @@ const { Schema, model } = require("mongoose");
 
 const commentSchema = new Schema(
   {
-    authorID: {
+    author: {
       type: Schema.Types.ObjectId,
       ref: "User",
     },
-    postID: {
+    post: {
       type: Schema.Types.ObjectId,
       ref: "Post",
     },
-    body_text: {
+    bodyText: {
       type: String,
       require: true,
+    },
+    status: {
+      type: String,
+      enum: ["APPROVED", "PENDING"],
+      default: "PENDING",
     },
   },
   { timestamps: true }
