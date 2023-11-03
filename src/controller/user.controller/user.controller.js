@@ -4,12 +4,14 @@ const getUserController = async (req, res, next) => {
     next(error);
   }
 };
+
 const getUserSingleController = async (req, res, next) => {
   try {
   } catch (error) {
     next(error);
   }
 };
+
 const postUserCreateController = async (req, res, next) => {
   try {
   } catch (error) {

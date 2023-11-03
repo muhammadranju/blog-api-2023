@@ -10,18 +10,13 @@ const errorFormatter = require("../../utils/errorFormatter/errorFormatter");
 const lowercaseText = require("../../utils/lowercase_text.utils/lowercase_text.utils");
 const response = require("../../utils/response.utils/response.utils");
 const constants = require("../../config/constants");
+
 const defaults = require("../../config/defaults");
 const myCache = new NodeCache({ stdTTL: 60 });
 
 /*========================================================================================== */
 
 const getArticlesController = async (req, res, next) => {
-  // const page = req.query.page || defaults.page;
-  // const limit = req.query.limit || defaults.limit;
-  // const sortType = req.query.sort_type || defaults.sortType;
-  // const sortBy = req.query.sort_by || defaults.sortBy;
-  // const search = req.query.search || defaults.search;
-
   const { limit, page, search } = req.query;
 
   try {
@@ -47,7 +42,7 @@ const getArticlesController = async (req, res, next) => {
         totalItems: 50,
       },
       links: {
-        self: "/articles?page=2&limit=10",
+        self: `/articles?page=2&limit=10`,
         next: "/articles?page=3&limit=10",
         prev: "/articles?page=1&limit=10",
       },
@@ -136,10 +131,32 @@ const putSingleArticlesUpdateController = async (req, res, next) => {
 
 const patchSingleArticleUpdateController = async (req, res, next) => {
   try {
-    const { id } = req.params;
-    const { title, bodyText, cover, tags, status } = req.body;
-    const post = await Post.updatePost(id);
+    const id = req.params.id;
+    let { title, bodyText, cover, tags, status } = req.body;
+    title ?? title;
+    bodyText ?? bodyText;
+    cover ?? cover;
+    tags ?? tags;
+    status ?? status;
+
+    const title_url =
+      lowercaseText(title, " ", "-").slice(0, 20) +
+      "-" +
+      shortId().toLowerCase().trim();
+
+    tags = lowercaseText(tags, " ");
+
+    const post = await Post.updatePost(
+      { _id: id },
+      title,
+      title_url,
+      bodyText,
+      cover,
+      tags,
+      status
+    );
     console.log(post);
+    return res.status(201).json(post);
   } catch (error) {
     next(error);
   }

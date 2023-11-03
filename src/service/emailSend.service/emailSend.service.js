@@ -27,7 +27,7 @@ async function emailSend(userEmail, userName) {
     html: `<div>
       <h1>Hi ${userName}</h1>
       <h2>Verify your email</h2>
-      <a href="${process.env.BASE_URL}/user/verify/${token}"> <button style="padding: 10px; border: 0px; border-radius: 10px; cursor: pointer; font-size: larger; font-weight: bold; background-color: blueviolet; color: white;">Verify</button></a>
+      <a href="${process.env.BASE_URL}/api/v1/user/verify/${token}"> <button style="padding: 10px; border: 0px; border-radius: 10px; cursor: pointer; font-size: larger; font-weight: bold; background-color: blueviolet; color: white;">Verify</button></a>
     </div>`, // html body
   });
   console.log("Message sent: %s", info.messageId);

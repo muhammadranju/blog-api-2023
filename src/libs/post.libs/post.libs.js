@@ -80,26 +80,26 @@ const findSinglePost = async ({ id }) => {
     .exec();
 };
 
-const updatePost = async (id, title, bodyText, cover, tags, status) => {
+const updatePost = async (
+  id,
+  title,
+  title_url,
+  bodyText,
+  cover,
+  tags,
+  status
+) => {
   title ?? title;
   bodyText ?? bodyText;
   cover ?? cover;
   tags ?? tags;
   status ?? status;
+  title_url ?? title_url;
 
-  const post = await Post.findById(
-    { _id: id },
-    {
-      $set: [
-        {
-          title,
-          bodyText,
-          cover,
-          tags,
-          status,
-        },
-      ],
-    }
+  const post = await Post.findByIdAndUpdate(
+    { ...id },
+    { title, title_url, bodyText, cover, tags, status },
+    { new: true }
   );
 
   return post;
@@ -109,10 +109,6 @@ const findPostAndDelete = async ({ id }) => {
   return await Post.findOneAndDelete({ title_url: id });
 };
 
-// await Post.findOneAndUpdate(
-// { _id: post },
-// { $push: { comments: comment._id } }
-// );
 const pushCommentInPost = async (id, updates) => {
   return await Post.findByIdAndUpdate({ ...id }, { $push: { ...updates } });
 };

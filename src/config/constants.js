@@ -24,6 +24,10 @@ const constants = {
     post: "Post",
     comment: "Comment",
   },
+  verifyStatus: {
+    verify: true,
+    unverified: false,
+  },
 };
 
 module.exports = constants;

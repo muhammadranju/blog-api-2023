@@ -1,7 +1,7 @@
-const Service = require("../service/DB_Services.service/DB_Services.service");
+const User = require("../libs/user.libs/user.libs");
+
 const NodeCache = require("node-cache");
 const myCache = new NodeCache({ stdTTL: 60 });
-const url = `https://jsonplaceholder.typicode.com/todos`;
 
 const homeController = async (req, res, next) => {
   try {
@@ -9,11 +9,9 @@ const homeController = async (req, res, next) => {
       console.log("gating from cache");
       return res.status(200).json(myCache.get("ranju"));
     }
-    const userData = await Service.find("user", "username email role", 10, {
-      _id: -1,
-    });
-    // const data = await fetch(url);
-    // const userData = await data.json();
+
+    const userData = await User.findAllUsers();
+
     myCache.set("ranju", userData);
     console.log("api request");
     return res.status(200).json(userData);

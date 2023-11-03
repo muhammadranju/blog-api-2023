@@ -1,13 +1,15 @@
 const { validationResult } = require("express-validator");
 
-const hash = require("../../utils/password_bcrypt.utils/password_bcrypt.utils"); // password hash function
-const lowercaseText = require("../../utils/lowercase_text.utils/lowercase_text.utils"); // lowercase function
 const Service = require("../../service/DB_Services.service/DB_Services.service"); // database models service function
 const jwt = require("../../service/jwt_generator.service/jwt_generator.service"); // jwt generator function
+const EmailSend = require("../../service/emailSend.service/emailSend.service"); // email send function
+
+const hash = require("../../utils/password_bcrypt.utils/password_bcrypt.utils"); // password hash function
 const response = require("../../utils/response.utils/response.utils"); // response handel function
-const emailSend = require("../../service/emailSend.service/emailSend.service"); // email send function
 const errorFormatter = require("../../utils/errorFormatter/errorFormatter"); // error formatter function
 
+const User = require("../../libs/user.libs/user.libs");
+const { verifyStatus } = require("../../config/constants");
 const postSignupController = async (req, res, next) => {
   try {
     const errors = validationResult(req).formatWith(errorFormatter);
@@ -18,20 +20,20 @@ const postSignupController = async (req, res, next) => {
     let { username, fullName, email, password } = req.body;
     username = username.split(" ").join("").toLowerCase();
 
-    const user = await Service.createDocument(
-      {
-        username,
-        fullName,
-        email,
-        password: await hash.generateBcryptPassword(password),
-      },
-      "user"
-    );
+    const user = await User.userCreate({
+      username,
+      fullName,
+      email,
+      password: await hash.generateBcryptPassword(password),
+    });
+
     if (user) {
-      emailSend(email, fullName);
+      EmailSend(email, fullName);
       await user.save();
     }
+
     return res.status(201).json({
+      user,
       code: 201,
       message: "Signup successful",
       verify:
@@ -54,8 +56,8 @@ const postLoginController = async (req, res, next) => {
       return res.status(400).json({ error: errors.mapped() });
     }
     const { email, password } = req.body;
+    const findUserEmail = await User.findUserEmail({ email });
 
-    const findUserEmail = await Service.findOne({ email }, "user");
     if (!findUserEmail) {
       return response(res, "Invalid credential, email or password.", 400);
     }
@@ -100,18 +102,26 @@ const getVerifyEmailController = async (req, res, _next) => {
       return response(res, "Unauthorized access", 401);
     }
     const { email } = jwt.jwtVerifyToken(token);
-    const findUser = await Service.findOne({ email }, "user");
+
+    const findUser = await User.findUserEmail({ email }, "user");
+
     if (findUser.isVerify) {
       return response(res, "Email is already verify.", 400);
     }
 
-    const isVerify = await Service.verifiedLink(
+    // const isVerify = await Service.verifiedLink(
+    //   { _id: findUser._id },
+    //   { isVerify: verifyStatus.verify },
+    //   "user",
+    //   "findById"
+    // );
+
+    const isVerify = await User.verifiedLink(
       { _id: findUser._id },
-      { isVerify: true },
-      "user",
-      "findById"
+      { isVerify: verifyStatus.verify }
     );
-    console.log(isVerify);
+
+    console.log(findUser.id);
     return response(res, "Successfully email verified.✅", 200);
   } catch (error) {
     console.log(error.message);
