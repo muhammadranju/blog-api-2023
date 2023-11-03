@@ -1,6 +1,7 @@
 const Comment = require("../../libs/comment.libs/comment.libs");
-const response = require("../../utils/response.utils/response.utils");
 const Post = require("../../libs/post.libs/post.libs");
+
+const response = require("../../utils/response.utils/response.utils");
 
 const getCommentController = async (req, res, next) => {
   try {

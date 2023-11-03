@@ -4,13 +4,16 @@ const shortId = require("shortid");
 
 const Post = require("../../libs/post.libs/post.libs");
 const Service = require("../../service/DB_Services.service/DB_Services.service");
+const Comment = require("../../libs/comment.libs/comment.libs");
+
 const errorFormatter = require("../../utils/errorFormatter/errorFormatter");
 const lowercaseText = require("../../utils/lowercase_text.utils/lowercase_text.utils");
 const response = require("../../utils/response.utils/response.utils");
+const constants = require("../../config/constants");
 const defaults = require("../../config/defaults");
-const Comment = require("../../libs/comment.libs/comment.libs");
-// const Comment = require("../../models/comment.models/comment.models");
 const myCache = new NodeCache({ stdTTL: 60 });
+
+/*========================================================================================== */
 
 const getArticlesController = async (req, res, next) => {
   // const page = req.query.page || defaults.page;
@@ -107,7 +110,7 @@ const getSingleArticleController = async (req, res, next) => {
     }
     const comment = await Comment.findCommentIsApproved(
       { post: findOnePost.id },
-      { status: "APPROVED" }
+      { status: constants.status.approved }
     );
     console.log(comment);
 
@@ -130,12 +133,18 @@ const putSingleArticlesUpdateController = async (req, res, next) => {
     next(error);
   }
 };
+
 const patchSingleArticleUpdateController = async (req, res, next) => {
   try {
+    const { id } = req.params;
+    const { title, bodyText, cover, tags, status } = req.body;
+    const post = await Post.updatePost(id);
+    console.log(post);
   } catch (error) {
     next(error);
   }
 };
+
 const deleteSingleArticlesDeleteController = async (req, res, next) => {
   try {
     const id = req.params.id;

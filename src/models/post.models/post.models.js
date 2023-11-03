@@ -1,5 +1,5 @@
 const { Schema, model } = require("mongoose");
-
+const constants = require("../../config/constants");
 const postSchema = new Schema(
   {
     title: {
@@ -16,10 +16,12 @@ const postSchema = new Schema(
       require: true,
       trim: true,
     },
-    cover: {
-      type: String,
-      require: true,
-    },
+    cover: [
+      {
+        type: String,
+        require: true,
+      },
+    ],
     tags: [
       {
         type: String,
@@ -29,8 +31,12 @@ const postSchema = new Schema(
     ],
     status: {
       type: String,
-      enum: ["DRAFT", "PUBLISHED", "PENDING"],
-      default: "DRAFT",
+      enum: [
+        constants.status.draft,
+        constants.status.published,
+        constants.status.pending,
+      ],
+      default: constants.status.draft,
     },
     author: {
       type: Schema.Types.ObjectId,

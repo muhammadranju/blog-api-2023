@@ -1,5 +1,5 @@
 const { Schema, model } = require("mongoose");
-
+const constants = require("../../config/constants");
 const commentSchema = new Schema(
   {
     author: {
@@ -19,8 +19,12 @@ const commentSchema = new Schema(
     },
     status: {
       type: String,
-      enum: ["APPROVED", "PENDING"],
-      default: "PENDING",
+      enum: [
+        constants.status.approved,
+        constants.status.pending,
+        constants.status.suspended,
+      ],
+      default: constants.status.pending,
     },
   },
   { timestamps: true }

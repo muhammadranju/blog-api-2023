@@ -80,6 +80,31 @@ const findSinglePost = async ({ id }) => {
     .exec();
 };
 
+const updatePost = async (id, title, bodyText, cover, tags, status) => {
+  title ?? title;
+  bodyText ?? bodyText;
+  cover ?? cover;
+  tags ?? tags;
+  status ?? status;
+
+  const post = await Post.findById(
+    { _id: id },
+    {
+      $set: [
+        {
+          title,
+          bodyText,
+          cover,
+          tags,
+          status,
+        },
+      ],
+    }
+  );
+
+  return post;
+};
+
 const findPostAndDelete = async ({ id }) => {
   return await Post.findOneAndDelete({ title_url: id });
 };
@@ -96,6 +121,7 @@ module.exports = {
   findAllItems,
   findAllPosts,
   pushCommentInPost,
+  updatePost,
   findSinglePost,
   findPostAndDelete,
 };

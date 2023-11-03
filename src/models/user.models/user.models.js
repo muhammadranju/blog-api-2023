@@ -1,5 +1,5 @@
 const { Schema, model } = require("mongoose");
-
+const constants = require("../../config/constants");
 const userSchema = new Schema(
   {
     username: {
@@ -27,13 +27,23 @@ const userSchema = new Schema(
     },
     role: {
       type: String,
-      enum: ["ADMIN", "EDITOR", "USER"],
-      default: "USER",
+      enum: [
+        constants.roles.admin,
+        constants.roles.editor,
+        constants.roles.user,
+        constants.roles.manager,
+      ],
+      default: constants.roles.user,
     },
     status: {
       type: String,
-      enum: ["PENDING", "APPROVED", "BLOCK", "DECLINE"],
-      default: "PENDING",
+      enum: [
+        constants.status.pending,
+        constants.status.approved,
+        constants.status.block,
+        constants.status.decline,
+      ],
+      default: constants.status.pending,
     },
     isVerify: {
       type: Boolean,
