@@ -8,7 +8,15 @@ router.put(
   Authentication,
   comment.putSingleCommentUpdateController
 );
-router.patch("/comments/:id", Authentication);
-router.delete("/comments/:id", Authentication);
+router.patch(
+  "/comments/:id",
+  Authentication,
+  comment.patchSingleCommentUpdateController
+);
+router.delete(
+  "/comments/:id",
+  Authentication,
+  comment.deleteSingleCommentDeleteController
+);
 
 module.exports = router;

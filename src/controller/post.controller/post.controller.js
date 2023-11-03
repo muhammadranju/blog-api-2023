@@ -8,7 +8,8 @@ const errorFormatter = require("../../utils/errorFormatter/errorFormatter");
 const lowercaseText = require("../../utils/lowercase_text.utils/lowercase_text.utils");
 const response = require("../../utils/response.utils/response.utils");
 const defaults = require("../../config/defaults");
-const Comment = require("../../models/comment.models/comment.models");
+const Comment = require("../../libs/comment.libs/comment.libs");
+// const Comment = require("../../models/comment.models/comment.models");
 const myCache = new NodeCache({ stdTTL: 60 });
 
 const getArticlesController = async (req, res, next) => {
@@ -104,9 +105,10 @@ const getSingleArticleController = async (req, res, next) => {
     if (!findOnePost) {
       return response(res, "This post was not found", 400);
     }
-    const comment = await Comment.find({
-      $and: [{ post: findOnePost.id }, { status: "APPROVED" }],
-    });
+    const comment = await Comment.findCommentIsApproved(
+      { post: findOnePost.id },
+      { status: "APPROVED" }
+    );
     console.log(comment);
 
     return res.status(200).json({

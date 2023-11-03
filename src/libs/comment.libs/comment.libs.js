@@ -1,8 +1,7 @@
 const Comment = require("../../models/comment.models/comment.models");
 const findAllComment = async (filter) => {
   if (filter) {
-    const comment = await Comment.find({ filter });
-    return comment;
+    return await Comment.find({ filter });
   }
   const comment = await Comment.find().populate(
     "author post",
@@ -12,13 +11,35 @@ const findAllComment = async (filter) => {
 };
 
 const createComment = async ({ author, authorId, post, bodyText }) => {
-  const comment = new Comment({ author, authorId, post, bodyText });
-  return comment;
+  return new Comment({ author, authorId, post, bodyText });
 };
 
 const commentApprovedUpdate = async (id, status) => {
-  return Comment.findByIdAndUpdate({ _id: id }, { status });
+  return Comment.findByIdAndUpdate({ _id: id }, { status }, { new: true });
 };
 
-const commentUpdate = async () => {};
-module.exports = { findAllComment, createComment, commentApprovedUpdate };
+const findCommentIsApproved = async (id, status) => {
+  return await Comment.find({
+    $and: [{ ...id }, { ...status }],
+  });
+};
+
+const commentUpdate = async (id, updates) => {
+  return await Comment.findByIdAndUpdate(
+    { _id: id },
+    { ...updates },
+    { new: true }
+  );
+};
+
+const commentDelete = async (id) => {
+  return await Comment.findByIdAndDelete({ _id: id });
+};
+module.exports = {
+  findAllComment,
+  createComment,
+  commentUpdate,
+  commentApprovedUpdate,
+  findCommentIsApproved,
+  commentDelete,
+};

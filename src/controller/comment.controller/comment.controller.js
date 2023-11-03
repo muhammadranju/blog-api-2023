@@ -1,7 +1,6 @@
 const Comment = require("../../libs/comment.libs/comment.libs");
 const response = require("../../utils/response.utils/response.utils");
 const Post = require("../../libs/post.libs/post.libs");
-// const Post = require("../../models/post.models/post.models");
 
 const getCommentController = async (req, res, next) => {
   try {
@@ -41,6 +40,7 @@ const postCommentCreateController = async (req, res, next) => {
     next(error);
   }
 };
+
 const putSingleCommentUpdateController = async (req, res, next) => {
   try {
     const { id } = req.params;
@@ -51,8 +51,26 @@ const putSingleCommentUpdateController = async (req, res, next) => {
     next(error);
   }
 };
+
+const patchSingleCommentUpdateController = async (req, res, next) => {
+  try {
+    const { id } = req.params;
+    const { bodyText } = req.body;
+    bodyText ?? bodyText;
+    const comment = await Comment.commentUpdate(id, { bodyText });
+    console.log(bodyText);
+
+    return res.status(201).json(comment);
+  } catch (error) {
+    next(error);
+  }
+};
 const deleteSingleCommentDeleteController = async (req, res, next) => {
   try {
+    const { id } = req.params;
+
+    const comment = await Comment.commentDelete(id);
+    return res.status(204).json(comment);
   } catch (error) {
     next(error);
   }
@@ -62,5 +80,6 @@ module.exports = {
   getCommentController,
   postCommentCreateController,
   putSingleCommentUpdateController,
+  patchSingleCommentUpdateController,
   deleteSingleCommentDeleteController,
 };
