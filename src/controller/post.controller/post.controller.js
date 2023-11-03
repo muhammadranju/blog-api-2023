@@ -3,7 +3,6 @@ const NodeCache = require("node-cache");
 const shortId = require("shortid");
 
 const Post = require("../../libs/post.libs/post.libs");
-const Service = require("../../service/DB_Services.service/DB_Services.service");
 const Comment = require("../../libs/comment.libs/comment.libs");
 
 const errorFormatter = require("../../utils/errorFormatter/errorFormatter");
@@ -52,33 +51,31 @@ const getArticlesController = async (req, res, next) => {
   }
 };
 const postArticleController = async (req, res, next) => {
+  const errors = validationResult(req).formatWith(errorFormatter);
+  if (!errors.isEmpty()) {
+    return res.status(400).json({ error: errors.mapped() });
+  }
   try {
-    const errors = validationResult(req).formatWith(errorFormatter);
-    if (!errors.isEmpty()) {
-      return res.status(400).json({ error: errors.mapped() });
-    }
-
     let { title, bodyText, cover, tags } = req.body;
 
+    const shortId3 = shortId().slice(0, 3);
     const title_url =
       lowercaseText(title, " ", "-").slice(0, 20) +
       "-" +
-      shortId().toLowerCase();
+      shortId3.toLowerCase();
 
     tags = lowercaseText(tags, " ");
-    const post = await Service.createDocument(
-      {
-        title,
-        title_url,
-        bodyText,
-        cover,
-        tags,
-        author: req.user._id,
-      },
-      "post"
-    );
 
-    await post.save();
+    const post = await Post.createPost({
+      title,
+      title_url,
+      bodyText,
+      cover,
+      tags,
+      author: req.user._id,
+    });
+
+    // await post.save();
 
     return res.status(201).json({
       code: 201,
@@ -138,11 +135,11 @@ const patchSingleArticleUpdateController = async (req, res, next) => {
     cover ?? cover;
     tags ?? tags;
     status ?? status;
-
+    const shortId3 = shortId().slice(0, 3);
     const title_url =
       lowercaseText(title, " ", "-").slice(0, 20) +
       "-" +
-      shortId().toLowerCase().trim();
+      shortId3.toLowerCase().trim();
 
     tags = lowercaseText(tags, " ");
 

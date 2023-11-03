@@ -1,15 +1,14 @@
 const { validationResult } = require("express-validator");
 
-const Service = require("../../service/DB_Services.service/DB_Services.service"); // database models service function
+const User = require("../../libs/user.libs/user.libs");
 const jwt = require("../../service/jwt_generator.service/jwt_generator.service"); // jwt generator function
 const EmailSend = require("../../service/emailSend.service/emailSend.service"); // email send function
 
+const { verifyStatus } = require("../../config/constants");
 const hash = require("../../utils/password_bcrypt.utils/password_bcrypt.utils"); // password hash function
 const response = require("../../utils/response.utils/response.utils"); // response handel function
 const errorFormatter = require("../../utils/errorFormatter/errorFormatter"); // error formatter function
 
-const User = require("../../libs/user.libs/user.libs");
-const { verifyStatus } = require("../../config/constants");
 const postSignupController = async (req, res, next) => {
   try {
     const errors = validationResult(req).formatWith(errorFormatter);
@@ -48,8 +47,6 @@ const postSignupController = async (req, res, next) => {
     next(error);
   }
 };
-
-const Users = require("../../models/user.models/user.models");
 
 const postLoginController = async (req, res, next) => {
   try {

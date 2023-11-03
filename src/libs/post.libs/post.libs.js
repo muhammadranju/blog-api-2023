@@ -80,6 +80,24 @@ const findSinglePost = async ({ id }) => {
     .exec();
 };
 
+const createPost = async ({
+  title,
+  title_url,
+  bodyText,
+  cover,
+  tags,
+  author,
+}) => {
+  return new Post({
+    title,
+    title_url,
+    bodyText,
+    cover,
+    tags,
+    author,
+  });
+};
+
 const updatePost = async (
   id,
   title,
@@ -116,6 +134,7 @@ const pushCommentInPost = async (id, updates) => {
 module.exports = {
   findAllItems,
   findAllPosts,
+  createPost,
   pushCommentInPost,
   updatePost,
   findSinglePost,
