@@ -40,18 +40,18 @@ const postSchema = new Schema(
     },
     author: {
       type: Schema.Types.ObjectId,
-      ref: "User",
+      ref: constants.ref.user,
     },
     comments: [
       {
         type: Schema.Types.ObjectId,
-        ref: "Comment",
+        ref: constants.ref.comment,
       },
     ],
   },
   { timestamps: true }
 );
 
-const Post = model("Post", postSchema);
+const Post = model(constants.ref.post, postSchema);
 
 module.exports = Post;

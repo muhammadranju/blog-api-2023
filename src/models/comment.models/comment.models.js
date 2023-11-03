@@ -7,11 +7,11 @@ const commentSchema = new Schema(
     },
     authorId: {
       type: Schema.Types.ObjectId,
-      ref: "User",
+      ref: constants.ref.user,
     },
     post: {
       type: Schema.Types.ObjectId,
-      ref: "Post",
+      ref: constants.ref.post,
     },
     bodyText: {
       type: String,
@@ -30,6 +30,6 @@ const commentSchema = new Schema(
   { timestamps: true }
 );
 
-const Comment = model("Comment", commentSchema);
+const Comment = model(constants.ref.comment, commentSchema);
 
 module.exports = Comment;

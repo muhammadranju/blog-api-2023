@@ -18,6 +18,12 @@ const constants = {
     editor: "EDITOR",
     manager: "MANAGER",
   },
+
+  ref: {
+    user: "User",
+    post: "Post",
+    comment: "Comment",
+  },
 };
 
 module.exports = constants;
