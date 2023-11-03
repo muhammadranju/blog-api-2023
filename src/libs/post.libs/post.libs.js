@@ -1,5 +1,6 @@
 const Post = require("../../models/post.models/post.models");
 const defaults = require("../../config/defaults");
+// const { populate } = require("../../models/comment.models/comment.models");
 const findAllItems = async ({
   page = defaults.page,
   limit = defaults.limit,
@@ -45,7 +46,7 @@ const findAllPosts = async ({ limit = 5, page = 1, sort, search = "" }) => {
       .limit(limit)
       .skip(skip)
       .sort(sort)
-      .populate("author", "username")
+      .populate({ path: "author", select: "username" })
       .select("-__v");
   }
 
@@ -61,7 +62,7 @@ const findAllPosts = async ({ limit = 5, page = 1, sort, search = "" }) => {
     .limit(limit)
     .skip(skip)
     .sort(sort)
-    .populate("author", "username")
+    .populate({ path: "author", select: "username" })
     .select("-__v");
   return posts;
 };
@@ -72,17 +73,32 @@ const findSinglePost = async ({ id }) => {
     // $or: [{ title_url: id }],
     title_url: id,
   })
-    .populate("authorID", "username")
-    .select("-__v");
+    .populate({
+      path: "author",
+      select: "username",
+    })
+
+    .select("-__v")
+    .exec();
   return post;
 };
 
 const findPostAndDelete = async ({ id }) => {
   return await Post.findOneAndDelete({ title_url: id });
 };
+
+// await Post.findOneAndUpdate(
+// { _id: post },
+// { $push: { comments: comment._id } }
+// );
+const pushCommentInPost = async (id, updates) => {
+  return await Post.findByIdAndUpdate({ ...id }, { $push: { ...updates } });
+};
+
 module.exports = {
   findAllItems,
   findAllPosts,
+  pushCommentInPost,
   findSinglePost,
   findPostAndDelete,
 };

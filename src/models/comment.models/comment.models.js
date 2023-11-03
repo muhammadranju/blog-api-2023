@@ -3,6 +3,9 @@ const { Schema, model } = require("mongoose");
 const commentSchema = new Schema(
   {
     author: {
+      type: String,
+    },
+    authorId: {
       type: Schema.Types.ObjectId,
       ref: "User",
     },

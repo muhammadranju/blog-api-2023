@@ -7,8 +7,8 @@ const Service = require("../../service/DB_Services.service/DB_Services.service")
 const errorFormatter = require("../../utils/errorFormatter/errorFormatter");
 const lowercaseText = require("../../utils/lowercase_text.utils/lowercase_text.utils");
 const response = require("../../utils/response.utils/response.utils");
-
 const defaults = require("../../config/defaults");
+const Comment = require("../../models/comment.models/comment.models");
 const myCache = new NodeCache({ stdTTL: 60 });
 
 const getArticlesController = async (req, res, next) => {
@@ -104,14 +104,18 @@ const getSingleArticleController = async (req, res, next) => {
     if (!findOnePost) {
       return response(res, "This post was not found", 400);
     }
+    const comment = await Comment.find({
+      $and: [{ post: findOnePost.id }, { status: "APPROVED" }],
+    });
+    console.log(comment);
 
     return res.status(200).json({
       data: findOnePost,
-      comments: [],
+      comments: comment,
       links: {
-        self: "/articles/1",
-        author: "/articles/1/author",
-        comments: "/articles/1/comments",
+        self: `/api/v1/articles/${id}`,
+        author: `/articles/${id}/${findOnePost.author.username}`,
+        comments: `/articles/${id}/comments`,
       },
     });
   } catch (error) {
