@@ -1,4 +1,5 @@
 const { validationResult } = require("express-validator");
+const bcrypt = require("bcrypt");
 
 const User = require("../../libs/user.libs/user.libs");
 const jwt = require("../../service/jwt_generator.service/jwt_generator.service"); // jwt generator function
@@ -119,8 +120,11 @@ const getVerifyEmailController = async (req, res, _next) => {
   }
 };
 
+const postForgotPassword = async (id) => {};
+
 module.exports = {
   postSignupController,
   postLoginController,
   getVerifyEmailController,
+  postForgotPassword,
 };
