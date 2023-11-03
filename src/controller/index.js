@@ -1,7 +1,7 @@
-const User = require("../libs/user.libs/user.libs");
-
 const NodeCache = require("node-cache");
 const myCache = new NodeCache({ stdTTL: 60 });
+
+const User = require("../libs/user.libs/user.libs");
 
 const homeController = async (req, res, next) => {
   try {
@@ -11,6 +11,10 @@ const homeController = async (req, res, next) => {
     }
 
     const userData = await User.findAllUsers();
+
+    if (req.user.role !== "ADMIN") {
+      return res.status(401).json({ message: "You don't have access." });
+    }
 
     myCache.set("ranju", userData);
     console.log("api request");
