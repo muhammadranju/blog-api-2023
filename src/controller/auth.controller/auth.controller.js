@@ -49,6 +49,8 @@ const postSignupController = async (req, res, next) => {
   }
 };
 
+const Users = require("../../models/user.models/user.models");
+
 const postLoginController = async (req, res, next) => {
   try {
     const errors = validationResult(req).formatWith(errorFormatter);
@@ -98,30 +100,21 @@ const postLoginController = async (req, res, next) => {
 const getVerifyEmailController = async (req, res, _next) => {
   try {
     const token = req.params.verify;
+
     if (token === undefined) {
       return response(res, "Unauthorized access", 401);
     }
     const { email } = jwt.jwtVerifyToken(token);
-
-    const findUser = await User.findUserEmail({ email }, "user");
+    const findUser = await User.findUserEmail({ email });
 
     if (findUser.isVerify) {
       return response(res, "Email is already verify.", 400);
     }
 
-    // const isVerify = await Service.verifiedLink(
-    //   { _id: findUser._id },
-    //   { isVerify: verifyStatus.verify },
-    //   "user",
-    //   "findById"
-    // );
-
-    const isVerify = await User.verifiedLink(
-      { _id: findUser._id },
-      { isVerify: verifyStatus.verify }
-    );
-
-    console.log(findUser.id);
+    const user = await User.verifiedLink(findUser.id, {
+      isVerify: verifyStatus.verify,
+    });
+    console.log(user);
     return response(res, "Successfully email verified.✅", 200);
   } catch (error) {
     console.log(error.message);

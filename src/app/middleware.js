@@ -8,7 +8,7 @@ const middleware = [
   express.urlencoded({ extended: true }),
   compression(),
   // userAgent,
-  morgan("dev"),
+  // morgan("dev"),
   // rateLimit,
 ];
 

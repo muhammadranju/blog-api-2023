@@ -17,7 +17,7 @@ async function emailSend(userEmail, userName) {
   const payload = {
     email: userEmail,
   };
-  const token = jwt.jwtGeneratorSignToken(payload, "30m");
+  const token = jwt.jwtGeneratorSignToken(payload, "1d");
   // send mail with defined transport object
   const info = await transporter.sendMail({
     from: `"Google 👻"${process.env.EMAIL}`, // sender address

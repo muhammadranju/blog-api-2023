@@ -22,13 +22,12 @@ const findUserEmail = async ({ email }) => {
   return user;
 };
 
-const verifiedLink = async ({ id, updated }) => {
+const verifiedLink = async (id, updated) => {
   const user = await User.findByIdAndUpdate(
     { _id: id },
-    { isVerify: updated },
+    { isVerify: Boolean(updated) },
     { new: true }
   );
-  console.log(user);
   return user;
 };
 
