@@ -1,8 +1,13 @@
 const router = require("express").Router();
 const Authentication = require("../../middleware/authentication.middleware/authentication.middleware");
 const Controller = require("../../controller");
-const { checkAdmin } = require("../../middleware/checkAdmin/checkAdmin");
+const restricted = require("../../middleware/restricted.middleware/restricted.middleware");
 
-router.get("/", Authentication, checkAdmin, Controller.homeController);
+router.get(
+  "/",
+  Authentication,
+  restricted("ADMIN", "MANAGER"),
+  Controller.homeController
+);
 
 module.exports = router;

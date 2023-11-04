@@ -12,10 +12,6 @@ const homeController = async (req, res, next) => {
 
     const userData = await User.findAllUsers();
 
-    if (req.user.role !== "ADMIN") {
-      return res.status(401).json({ message: "You don't have access." });
-    }
-
     myCache.set("ranju", userData);
     console.log("api request");
     return res.status(200).json(userData);
@@ -31,10 +27,10 @@ const notFoundErrorHandler = (req, res, next) => {
 
 const serverErrorHandler = (err, req, res, next) => {
   // TODO: format error
-  console.log(err);
+  console.log("\nInternal Server Error: ", err);
   res.status(err.status || 500).json({
+    status: err.status || 500,
     message: err.message,
-    errors: err.errors,
   });
 };
 

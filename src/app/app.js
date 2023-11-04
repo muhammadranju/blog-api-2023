@@ -1,8 +1,13 @@
 const express = require("express");
-const errors = require("../controller");
 const app = express();
 
-app.use([require("./middleware"), require("../routes")]);
-app.use([errors.notFoundErrorHandler, errors.serverErrorHandler]);
+const { notFoundErrorHandler, serverErrorHandler } = require("../controller");
+const middleware = require("./middleware");
+const routes = require("../routes");
+
+app.use(middleware); // middleware
+app.use(routes); // routes
+
+app.use([notFoundErrorHandler, serverErrorHandler]);
 
 module.exports = app;

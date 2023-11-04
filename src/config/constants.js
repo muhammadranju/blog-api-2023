@@ -1,4 +1,7 @@
 const constants = {
+  DATABASE_NAME: "BLOG-API-2023",
+  DATABASE_QUERY: "?retryWrites=true&w=majority",
+
   status: {
     pending: "PENDING",
     approved: "APPROVED",

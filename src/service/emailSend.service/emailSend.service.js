@@ -1,5 +1,5 @@
 const nodemailer = require("nodemailer");
-const jwt = require("../jwt_generator.service/jwt_generator.service");
+const jwt = require("../jwtGenerator.service/jwtGenerator.service");
 
 const transporter = nodemailer.createTransport({
   // host: "smtp.forwardemail.net",

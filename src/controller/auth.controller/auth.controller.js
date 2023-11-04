@@ -2,11 +2,11 @@ const { validationResult } = require("express-validator");
 const bcrypt = require("bcrypt");
 
 const User = require("../../libs/user.libs/user.libs");
-const jwt = require("../../service/jwt_generator.service/jwt_generator.service"); // jwt generator function
+const jwt = require("../../service/jwtGenerator.service/jwtGenerator.service"); // jwt generator function
 const EmailSend = require("../../service/emailSend.service/emailSend.service"); // email send function
 
 const { verifyStatus } = require("../../config/constants");
-const hash = require("../../utils/password_bcrypt.utils/password_bcrypt.utils"); // password hash function
+const hash = require("../../utils/passwordBcrypt.utils/passwordBcrypt.utils"); // password hash function
 const response = require("../../utils/response.utils/response.utils"); // response handel function
 const errorFormatter = require("../../utils/errorFormatter/errorFormatter"); // error formatter function
 

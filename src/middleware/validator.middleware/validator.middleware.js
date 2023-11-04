@@ -1,5 +1,5 @@
 const { body } = require("express-validator");
-const Service = require("../../service/DB_Services.service/DB_Services.service");
+const Service = require("../../service/DBServices.service/DBServices.service");
 
 const loginValidation = [
   body("email")

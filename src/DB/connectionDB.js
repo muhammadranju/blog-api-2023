@@ -1,25 +1,25 @@
 const mongoose = require("mongoose");
-const server = "127.0.0.1:27017" || process.env.SERVER_URI; // REPLACE WITH YOUR OWN SERVER
-const database = process.env.DATABASE_NAME; // REPLACE WITH YOUR OWN DB NAME
+const { DATABASE_NAME, DATABASE_QUERY } = require("../config/constants");
+
+const MONGODB_URI = process.env.MONGODB_URI; // REPLACE WITH YOUR OWN MONGODB URI
+const MONGODB_URI_LOCAL = process.env.MONGODB_URI_LOCAL; // REPLACE WITH YOUR LOCAL MONGODB URI
 
 async function connectDB() {
-  await mongoose.connect(`mongodb://${server}/${database}`);
+  try {
+    const connectInstance = await mongoose.connect(
+      `${MONGODB_URI_LOCAL}/${DATABASE_NAME}`
+    );
 
-  // await mongoose.connect(
-  //   `${process.env.SERVER_URI}/${process.env.DATABASE_NAME}?${process.env.DATABASE_QUERY}`
-  // );
-  console.log("MongoDB connected!!");
+    // const connectInstance = await mongoose.connect(
+    //   `${MONGODB_URI}/${DATABASE_NAME}${DATABASE_QUERY}`
+    // );
+    console.log(
+      `MongoDB connected!! DB HOST: ${connectInstance.connection.host}`
+    );
+  } catch (error) {
+    console.log("MONGODB CONNECTION FIELD: ", error);
+    process.exit(1);
+  }
 }
-
-// const connectionDB = mongoose
-//   .connect(`mongodb://${server}/${database}`)
-//   .then(() => {
-//     console.log("MongoDB connected!!");
-//     return true;
-//   })
-//   .catch((err) => {
-//     console.log("Failed to connect to MongoDB", err);
-//     return false;
-//   });
 
 module.exports = connectDB;

@@ -1,6 +1,6 @@
 const User = require("../../libs/user.libs/user.libs");
 
-const jwt = require("../../service/jwt_generator.service/jwt_generator.service");
+const jwt = require("../../service/jwtGenerator.service/jwtGenerator.service");
 const response = require("../../utils/response.utils/response.utils");
 
 async function authentication(req, res, next) {

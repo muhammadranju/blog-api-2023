@@ -6,13 +6,21 @@ const Post = require("../../libs/post.libs/post.libs");
 const Comment = require("../../libs/comment.libs/comment.libs");
 
 const errorFormatter = require("../../utils/errorFormatter/errorFormatter");
-const lowercaseText = require("../../utils/lowercase_text.utils/lowercase_text.utils");
+const lowercaseText = require("../../utils/lowercaseText.utils/lowercaseText.utils");
 const response = require("../../utils/response.utils/response.utils");
 const constants = require("../../config/constants");
 
 const defaults = require("../../config/defaults");
 const myCache = new NodeCache({ stdTTL: 60 });
 
+const myUtils = (title) => {
+  const shortId3 = shortId().slice(0, 3);
+  return (
+    lowercaseText(title, " ", "-").slice(0, 20) +
+    "-" +
+    shortId3.toLowerCase().trim()
+  );
+};
 /*========================================================================================== */
 
 const getArticlesController = async (req, res, next) => {
@@ -27,7 +35,7 @@ const getArticlesController = async (req, res, next) => {
     });
 
     if (posts.length === 0) {
-      return response(res, "This post was not found", 404);
+      return response(res, "The post was not found", 404);
     }
 
     return res.status(200).json({
@@ -58,11 +66,7 @@ const postArticleController = async (req, res, next) => {
   try {
     let { title, bodyText, cover, tags } = req.body;
 
-    const shortId3 = shortId().slice(0, 3);
-    const title_url =
-      lowercaseText(title, " ", "-").slice(0, 20) +
-      "-" +
-      shortId3.toLowerCase();
+    const title_url = myUtils(title);
 
     tags = lowercaseText(tags, " ");
 
@@ -135,11 +139,8 @@ const patchSingleArticleUpdateController = async (req, res, next) => {
     cover ?? cover;
     tags ?? tags;
     status ?? status;
-    const shortId3 = shortId().slice(0, 3);
-    const title_url =
-      lowercaseText(title, " ", "-").slice(0, 20) +
-      "-" +
-      shortId3.toLowerCase().trim();
+
+    const title_url = myUtils(title);
 
     tags = lowercaseText(tags, " ");
 
@@ -167,9 +168,11 @@ const deleteSingleArticlesDeleteController = async (req, res, next) => {
       return response(res, "Post not available", 400);
     }
     console.log("Article deleted successfully");
-    return res
-      .status(204)
-      .json({ postDelete, message: "Article deleted successfully" });
+    return res.status(204).json({
+      postDelete,
+      status: 204,
+      message: "Article deleted successfully",
+    });
   } catch (error) {
     next(error);
   }

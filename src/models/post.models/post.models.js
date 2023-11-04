@@ -16,6 +16,10 @@ const postSchema = new Schema(
       require: true,
       trim: true,
     },
+    coverImage: {
+      type: String,
+      // require: true,
+    },
     cover: [
       {
         type: String,
