@@ -1,5 +1,5 @@
 const { Schema, model } = require("mongoose");
-const constants = require("../../config/constants");
+const { UserCommentStatusEnum, ModelRefNames } = require("../../constants");
 const commentSchema = new Schema(
   {
     author: {
@@ -7,11 +7,11 @@ const commentSchema = new Schema(
     },
     authorId: {
       type: Schema.Types.ObjectId,
-      ref: constants.ref.user,
+      ref: ModelRefNames.User,
     },
     post: {
       type: Schema.Types.ObjectId,
-      ref: constants.ref.post,
+      ref: ModelRefNames.Post,
     },
     bodyText: {
       type: String,
@@ -20,16 +20,16 @@ const commentSchema = new Schema(
     status: {
       type: String,
       enum: [
-        constants.status.approved,
-        constants.status.pending,
-        constants.status.suspended,
+        UserCommentStatusEnum.APPROVED,
+        UserCommentStatusEnum.PENDING,
+        UserCommentStatusEnum.SUSPENDED,
       ],
-      default: constants.status.pending,
+      default: UserCommentStatusEnum.PENDING,
     },
   },
   { timestamps: true }
 );
 
-const Comment = model(constants.ref.comment, commentSchema);
+const Comment = model(ModelRefNames.Comment, commentSchema);
 
 module.exports = Comment;

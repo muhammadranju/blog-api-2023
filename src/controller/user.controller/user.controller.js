@@ -1,3 +1,5 @@
+const { createUser } = require("../../libs/User");
+
 const getUserController = async (req, res, next) => {
   try {
   } catch (error) {
@@ -14,6 +16,8 @@ const getUserSingleController = async (req, res, next) => {
 
 const postUserCreateController = async (req, res, next) => {
   try {
+    const { username, fullName, email, password, role, status, isVerify } =
+      req.body;
   } catch (error) {
     next(error);
   }

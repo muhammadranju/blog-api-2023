@@ -1,5 +1,10 @@
 const { Schema, model } = require("mongoose");
-const constants = require("../../config/constants");
+const {
+  UserRolesEnum,
+  UserStatusEnum,
+  ModelRefNames,
+  VerifyStatus,
+} = require("../../constants");
 const userSchema = new Schema(
   {
     username: {
@@ -28,30 +33,30 @@ const userSchema = new Schema(
     role: {
       type: String,
       enum: [
-        constants.roles.admin,
-        constants.roles.editor,
-        constants.roles.user,
-        constants.roles.manager,
+        UserRolesEnum.ADMIN,
+        UserRolesEnum.EDITOR,
+        UserRolesEnum.USER,
+        UserRolesEnum.MANAGER,
       ],
-      default: constants.roles.user,
+      default: UserRolesEnum.USER,
     },
     status: {
       type: String,
       enum: [
-        constants.status.pending,
-        constants.status.approved,
-        constants.status.block,
-        constants.status.decline,
+        UserStatusEnum.PENDING,
+        UserStatusEnum.APPROVED,
+        UserStatusEnum.BLOCK,
+        UserStatusEnum.DECLINE,
       ],
-      default: constants.status.pending,
+      default: UserStatusEnum.APPROVED,
     },
     isVerify: {
       type: Boolean,
-      default: false,
+      default: VerifyStatus.unverified,
     },
   },
   { timestamps: true }
 );
 
-const User = model(constants.ref.user, userSchema);
+const User = model(ModelRefNames.User, userSchema);
 module.exports = User;

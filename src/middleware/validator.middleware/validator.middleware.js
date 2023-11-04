@@ -1,5 +1,5 @@
 const { body } = require("express-validator");
-const Service = require("../../service/DBServices.service/DBServices.service");
+const User = require("../../libs/user.libs/user.libs");
 
 const loginValidation = [
   body("email")
@@ -38,7 +38,7 @@ const signupValidation = [
     .withMessage("Email should be 40 characters only. ")
     .custom(async (username) => {
       username = username.split(" ").join("").toLowerCase();
-      const existingUser = await Service.findOne({ username }, "user");
+      const existingUser = await User.findUsername({ username });
       if (existingUser) {
         throw new Error("Username is already an exists.");
       }
@@ -54,12 +54,11 @@ const signupValidation = [
     .withMessage("Email must be a valid email address.")
     .normalizeEmail()
     .custom(async (email) => {
-      const existingUser = await Service.findOne({ email }, "user");
+      const existingUser = await User.findUserEmail({ email });
       if (existingUser) {
         throw new Error("Email is already an exists.");
       }
     }),
-  //   body("gender").not().notEmpty().withMessage("Gander is required.").trim(),
 
   body("fullName")
     .trim()
@@ -70,23 +69,6 @@ const signupValidation = [
     .withMessage("First Name at least Two or Six latter.")
     .isString()
     .withMessage("First name is must be alpha characters."),
-
-  //   body("lastName")
-  //     .trim()
-  //     .not()
-  //     .notEmpty()
-  //     .withMessage("Last Name field is required.")
-  //     .isLength({ min: 2, max: 30 })
-  //     .withMessage("Last Name at east Tow or Six characters.")
-  //     .isString()
-  //     .withMessage("Last name is must be alpha characters."),
-
-  //   body("division")
-  //     .trim()
-  //     .not()
-  //     .notEmpty()
-  //     .withMessage("Division field is required.")
-  //     .isString(),
 
   body("password")
     .trim()
