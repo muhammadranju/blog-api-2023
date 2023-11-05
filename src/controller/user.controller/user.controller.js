@@ -40,6 +40,12 @@ const deleteUserDeleteController = async (req, res, next) => {
     next(error);
   }
 };
+const userForgotPasswordController = async (req, res, next) => {
+  try {
+  } catch (error) {
+    next(error);
+  }
+};
 const userChangePasswordController = async (req, res, next) => {
   try {
   } catch (error) {
@@ -54,5 +60,6 @@ module.exports = {
   putUserUpdateController,
   patchUserUpdateController,
   deleteUserDeleteController,
+  userForgotPasswordController,
   userChangePasswordController,
 };

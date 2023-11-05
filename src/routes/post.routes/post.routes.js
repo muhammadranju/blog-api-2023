@@ -4,33 +4,20 @@ const Authentication = require("../../middleware/authentication.middleware/authe
 
 const controller = require("../../controller/post.controller/post.controller");
 
-// router.get("/articles/:id/comment",controller.);
-// router.post("/articles/:id/comment"controller.);
-// router.get("/articles/:id/author"controller.);
+router
+  .route("/articles/:id")
+  .get(controller.getSingleArticleController)
+  .put(Authentication, controller.putSingleArticlesUpdateController)
+  .patch(Authentication, controller.patchSingleArticleUpdateController)
+  .delete(Authentication, controller.deleteSingleArticlesDeleteController);
 
-router.put(
-  "/articles/:id",
-  Authentication,
-  controller.putSingleArticlesUpdateController
-);
-router.patch(
-  "/articles/:id",
-  Authentication,
-  controller.patchSingleArticleUpdateController
-);
-router.delete(
-  "/articles/:id",
-  Authentication,
-  controller.deleteSingleArticlesDeleteController
-);
-
-router.get("/articles", controller.getArticlesController);
-router.get("/articles/:id", controller.getSingleArticleController);
-router.post(
-  "/articles",
-  Authentication,
-  validator.postValidator,
-  controller.postArticleController
-);
+router
+  .route("/articles")
+  .get(controller.getArticlesController)
+  .post(
+    Authentication,
+    validator.postValidator,
+    controller.postArticleController
+  );
 
 module.exports = router;

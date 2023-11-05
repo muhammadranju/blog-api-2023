@@ -2,37 +2,28 @@ const router = require("express").Router();
 const controller = require("../../controller/user.controller/user.controller");
 const Authentication = require("../../middleware/authentication.middleware/authentication.middleware");
 const { checkAdmin } = require("../../middleware/checkAdmin/checkAdmin");
+router
+  .route("/user/:userId")
+  .get(Authentication, checkAdmin, controller.getUserSingleController)
+  .put(Authentication, checkAdmin, controller.putUserUpdateController)
+  .patch(Authentication, checkAdmin, controller.patchUserUpdateController);
 
-router.get("/user", Authentication, checkAdmin, controller.getUserController);
-router.get(
-  "/user/:userId",
-  Authentication,
-  checkAdmin,
-  controller.getUserSingleController
-);
 router.post(
-  "/user",
+  "/user/:userId/forgot-password",
   Authentication,
   checkAdmin,
-  controller.postUserCreateController
+  controller.userForgotPasswordController
 );
-router.put(
-  "/user/:userId",
-  Authentication,
-  checkAdmin,
-  controller.putUserUpdateController
-);
+
 router.patch(
-  "/user/:userId",
-  Authentication,
-  checkAdmin,
-  controller.patchUserUpdateController
-);
-router.put(
-  "/user/:userId/change-password",
+  "/user/:userId/reset-password",
   Authentication,
   checkAdmin,
   controller.userChangePasswordController
 );
+router
+  .route("/user")
+  .get(Authentication, checkAdmin, controller.getUserController)
+  .post(Authentication, checkAdmin, controller.postUserCreateController);
 
 module.exports = router;
