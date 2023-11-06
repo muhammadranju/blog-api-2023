@@ -1,6 +1,7 @@
 const NodeCache = require("node-cache");
 const myCache = new NodeCache({ stdTTL: 60 });
 
+const { ApiResponse } = require("../utils/ApiResponse");
 const User = require("../libs/user.libs/user.libs");
 
 const homeController = async (req, res, next) => {
@@ -19,15 +20,6 @@ const homeController = async (req, res, next) => {
     next(error);
   }
 };
-
-class ApiResponse extends Error {
-  constructor(message, statusCode) {
-    super(message);
-    this.statusCode = statusCode;
-    this.status = statusCode >= 400 && statusCode < 500 ? "fail" : "error";
-    this.o;
-  }
-}
 
 const notFoundErrorHandler = (req, res, next) => {
   const err = new ApiResponse(
@@ -54,5 +46,4 @@ module.exports = {
   homeController,
   notFoundErrorHandler,
   serverErrorHandler,
-  ApiResponse,
 };

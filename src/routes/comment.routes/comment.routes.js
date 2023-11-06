@@ -11,7 +11,7 @@ router
 
 router
   .route("/comments")
-  .get(comment.getCommentController)
+  .get(Authentication, comment.getCommentController)
   .post(Authentication, comment.postCommentCreateController);
 
 module.exports = router;
