@@ -3,12 +3,11 @@ const Post = require("../../libs/post.libs/post.libs");
 
 const asyncHandler = require("../../utils/asyncHandler");
 const response = require("../../utils/response.utils/response.utils");
-const { ApiResponse } = require("../../utils/ApiResponse");
 
 const getCommentController = asyncHandler(async (_req, res) => {
   const comment = await Comment.findAllComment();
   if (!comment.length) {
-    return new ApiResponse("Comment not found", 404);
+    return response(res, "Comment not found", 404);
   }
 
   return res.status(200).json({
@@ -18,7 +17,7 @@ const getCommentController = asyncHandler(async (_req, res) => {
 const postCommentCreateController = asyncHandler(async (req, res) => {
   const { post, bodyText } = req.body;
   if (!post || !bodyText) {
-    new ApiResponse("Invalid comments parameters", 400);
+    return response(res, "Invalid comments parameters", 400);
   }
   const comment = await Comment.createComment({
     author: req.user.username,
@@ -29,7 +28,7 @@ const postCommentCreateController = asyncHandler(async (req, res) => {
 
   await Post.pushCommentInPost({ _id: post }, { comments: comment._id });
   // findPost.save({ comments: comment._id });
-  // await comment.save()
+  // await comment.save();
   return res
     .status(201)
     .json({ message: "Comment created successfully.", comment });

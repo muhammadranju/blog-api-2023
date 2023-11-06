@@ -58,6 +58,7 @@ const getArticlesController = async (req, res, next) => {
     next(error);
   }
 };
+
 const postArticleController = async (req, res, next) => {
   const errors = validationResult(req).formatWith(errorFormatter);
   if (!errors.isEmpty()) {

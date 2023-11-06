@@ -1,101 +1,91 @@
 const { validationResult } = require("express-validator");
-const bcrypt = require("bcrypt");
 
 const User = require("../../libs/user.libs/user.libs");
 const jwt = require("../../service/jwtGenerator.service/jwtGenerator.service"); // jwt generator function
 const EmailSend = require("../../service/emailSend.service/emailSend.service"); // email send function
 
+const asyncHandler = require("../../utils/asyncHandler");
 const { verifyStatus } = require("../../config/constants");
 const hash = require("../../utils/passwordBcrypt.utils/passwordBcrypt.utils"); // password hash function
 const response = require("../../utils/response.utils/response.utils"); // response handel function
 const errorFormatter = require("../../utils/errorFormatter/errorFormatter"); // error formatter function
 
-const postSignupController = async (req, res, next) => {
-  try {
-    const errors = validationResult(req).formatWith(errorFormatter);
-    if (!errors.isEmpty()) {
-      return res.status(400).json({ error: errors.mapped() });
-    }
-
-    let { username, fullName, email, password } = req.body;
-    username = username.split(" ").join("").toLowerCase();
-
-    const user = await User.userCreate({
-      username,
-      fullName,
-      email,
-      password: await hash.generateBcryptPassword(password),
-    });
-
-    if (user) {
-      EmailSend(email, fullName);
-      // await user.save();
-    }
-
-    return res.status(201).json({
-      user,
-      code: 201,
-      message: "Signup successful",
-      verify:
-        "You must be verify your email before you login, Verify link will be expired in 30 minutes.",
-      links: {
-        self: "/auth/signup",
-        signin: "/auth/signin",
-      },
-    });
-  } catch (error) {
-    console.log(error.message);
-    next(error);
+const postSignupController = asyncHandler(async (req, res) => {
+  const errors = validationResult(req).formatWith(errorFormatter);
+  if (!errors.isEmpty()) {
+    return res.status(400).json({ error: errors.mapped() });
   }
-};
 
-const postLoginController = async (req, res, next) => {
-  try {
-    const errors = validationResult(req).formatWith(errorFormatter);
-    if (!errors.isEmpty()) {
-      return res.status(400).json({ error: errors.mapped() });
-    }
-    const { email, password } = req.body;
-    const findUserEmail = await User.findUserEmail({ email });
+  let { username, fullName, email, password } = req.body;
+  username = username.split(" ").join("").toLowerCase();
 
-    if (!findUserEmail) {
-      return response(res, "Invalid credential, email or password.", 400);
-    }
-    if (findUserEmail.isVerify === false) {
-      return response(
-        res,
-        "You must be verify your email first. please try again later",
-        400
-      );
-    }
+  const user = await User.userCreate({
+    username,
+    fullName,
+    email,
+    password: await hash.generateBcryptPassword(password),
+  });
 
-    const compareBcryptPassword = await hash.compareBcryptPassword(
-      password,
-      findUserEmail.password
+  if (user) {
+    EmailSend(email, fullName);
+    // await user.save();
+  }
+
+  return res.status(201).json({
+    user,
+    code: 201,
+    message: "Signup successful",
+    verify:
+      "You must be verify your email before you login, Verify link will be expired in 30 minutes.",
+    links: {
+      self: "/auth/signup",
+      signin: "/auth/signin",
+    },
+  });
+});
+
+const postLoginController = asyncHandler(async (req, res, next) => {
+  const errors = validationResult(req).formatWith(errorFormatter);
+  if (!errors.isEmpty()) {
+    return res.status(400).json({ error: errors.mapped() });
+  }
+  const { email, password } = req.body;
+  const findUserEmail = await User.findUserEmail({ email });
+
+  if (!findUserEmail) {
+    return response(res, "Invalid credential, email or password.", 400);
+  }
+  if (findUserEmail.isVerify === false) {
+    return response(
+      res,
+      "You must be verify your email first. please try again later",
+      400
     );
-
-    if (!compareBcryptPassword) {
-      return response(res, "Invalid credential, email or password.", 400);
-    }
-    const payload = {
-      user_id: findUserEmail._id,
-      name: findUserEmail.fullName,
-      email: findUserEmail.email,
-      isLogin: compareBcryptPassword,
-    };
-    const token = jwt.jwtGeneratorSignToken(payload, "1d");
-    return res.json({
-      message: "User login successfully!",
-      token,
-      status: compareBcryptPassword,
-    });
-  } catch (error) {
-    console.log(error);
-    next(error);
   }
-};
 
-const getVerifyEmailController = async (req, res, _next) => {
+  const compareBcryptPassword = await hash.compareBcryptPassword(
+    password,
+    findUserEmail.password
+  );
+
+  if (!compareBcryptPassword) {
+    return response(res, "Invalid credential, email or password.", 400);
+  }
+  const payload = {
+    user_id: findUserEmail._id,
+    name: findUserEmail.fullName,
+    email: findUserEmail.email,
+    isLogin: compareBcryptPassword,
+  };
+  const token = jwt.jwtGeneratorSignToken(payload, "1d");
+  return res.json({
+    message: "User login successfully!",
+    token,
+    status: compareBcryptPassword,
+  });
+});
+
+const getVerifyEmailController = async (req, res, next) => {
   try {
     const token = req.params.verify;
 
