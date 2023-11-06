@@ -20,16 +20,32 @@ const homeController = async (req, res, next) => {
   }
 };
 
+class ApiResponse extends Error {
+  constructor(message, statusCode) {
+    super(message);
+    this.statusCode = statusCode;
+    this.status = statusCode >= 400 && statusCode < 500 ? "fail" : "error";
+    this.o;
+  }
+}
+
 const notFoundErrorHandler = (req, res, next) => {
-  res.status(404).json({ status: 404, message: "Resource not found." });
-  next();
+  const err = new ApiResponse(
+    `Con't find ${req.originalUrl} on the server!`,
+    404
+  );
+
+  next(err);
 };
 
 const serverErrorHandler = (err, req, res, next) => {
-  // TODO: format error
-  console.log("\nInternal Server Error: ", err);
-  res.status(err.status || 500).json({
-    status: err.status || 500,
+  // console.log("\nInternal Server Error: ", err);
+  err.statusCode = err.statusCode || 500;
+  err.status = err.status || "error";
+
+  res.status(err.statusCode || 500).json({
+    status: err.status,
+    statusCode: err.statusCode,
     message: err.message,
   });
 };
@@ -38,4 +54,5 @@ module.exports = {
   homeController,
   notFoundErrorHandler,
   serverErrorHandler,
+  ApiResponse,
 };
