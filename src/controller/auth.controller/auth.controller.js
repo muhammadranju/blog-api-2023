@@ -10,7 +10,7 @@ const hash = require("../../utils/passwordBcrypt.utils/passwordBcrypt.utils"); /
 const response = require("../../utils/response.utils/response.utils"); // response handel function
 const errorFormatter = require("../../utils/errorFormatter/errorFormatter"); // error formatter function
 
-const postSignupController = asyncHandler(async (req, res) => {
+const postSignupController = asyncHandler(async (req, res, next) => {
   const errors = validationResult(req).formatWith(errorFormatter);
   if (!errors.isEmpty()) {
     return res.status(400).json({ error: errors.mapped() });
@@ -23,12 +23,12 @@ const postSignupController = asyncHandler(async (req, res) => {
     username,
     fullName,
     email,
-    password: await hash.generateBcryptPassword(password),
+    password,
   });
 
   if (user) {
     EmailSend(email, fullName);
-    // await user.save();
+    await user.save();
   }
 
   return res.status(201).json({

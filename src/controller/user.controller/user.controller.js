@@ -1,57 +1,61 @@
 const { createUser } = require("../../libs/User");
 
-const getUserController = async (req, res, next) => {
+const asyncHandler = require("../../utils/asyncHandler");
+const ApiResponse = require("../../utils/ApiResponse");
+
+const getUserController = asyncHandler(async (req, res, next) => {
   try {
   } catch (error) {
     next(error);
   }
-};
+});
 
-const getUserSingleController = async (req, res, next) => {
+const getUserSingleController = asyncHandler(async (req, res, next) => {
   try {
   } catch (error) {
     next(error);
   }
-};
+});
 
-const postUserCreateController = async (req, res, next) => {
+const postUserCreateController = asyncHandler(async (req, res, next) => {
   try {
     const { username, fullName, email, password, role, status, isVerify } =
       req.body;
   } catch (error) {
     next(error);
   }
-};
-const putUserUpdateController = async (req, res, next) => {
+});
+const putUserUpdateController = asyncHandler(async (req, res, next) => {
   try {
   } catch (error) {
     next(error);
   }
-};
-const patchUserUpdateController = async (req, res, next) => {
+});
+
+const patchUserUpdateController = asyncHandler(async (req, res, next) => {
   try {
   } catch (error) {
     next(error);
   }
-};
-const deleteUserDeleteController = async (req, res, next) => {
+});
+const deleteUserDeleteController = asyncHandler(async (req, res, next) => {
   try {
   } catch (error) {
     next(error);
   }
-};
-const userForgotPasswordController = async (req, res, next) => {
+});
+const userForgotPasswordController = asyncHandler(async (req, res, next) => {
   try {
   } catch (error) {
     next(error);
   }
-};
-const userChangePasswordController = async (req, res, next) => {
+});
+const userChangePasswordController = asyncHandler(async (req, res, next) => {
   try {
   } catch (error) {
     next(error);
   }
-};
+});
 
 module.exports = {
   getUserController,
