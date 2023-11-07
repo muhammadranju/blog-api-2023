@@ -28,7 +28,7 @@ const postSignupController = asyncHandler(async (req, res, next) => {
 
   if (user) {
     EmailSend(email, fullName);
-    // await user.save();
+    await user.save();
   }
 
   return res.status(201).json({
