@@ -22,10 +22,9 @@ const homeController = async (req, res, next) => {
 };
 
 const notFoundErrorHandler = (req, res, next) => {
-  // const err = new Error(`Con't find ${req.originalUrl} on the server!`, 404);
   const err = new ApiResponse(
     404,
-    "fail",
+    {},
     `Con't find ${req.originalUrl} on the server!`
   );
 
@@ -33,13 +32,10 @@ const notFoundErrorHandler = (req, res, next) => {
 };
 
 const serverErrorHandler = (err, req, res, next) => {
-  // err.statusCode = err.statusCode || 500;
-  // err.status = err.status || "error";
-
   res.status(err.statusCode).json({
-    status: err.status,
-    statusCode: err.statusCode,
-    message: err.message,
+    // status: err.status,
+    // statusCode: err.statusCode,
+    // message: err.message,
     stackTrace: err.stack,
     error: err,
   });
