@@ -1,7 +1,9 @@
-const { createUser } = require("../../libs/User");
+const User = require("../../libs/User");
+const Users = require("../../models/user.models/user.models");
 
 const asyncHandler = require("../../utils/asyncHandler");
 const ApiResponse = require("../../utils/ApiResponse");
+const { UserStatusEnum, UserRolesEnum } = require("../../constants");
 
 const getUserController = asyncHandler(async (req, res, next) => {
   try {
@@ -19,9 +21,31 @@ const getUserSingleController = asyncHandler(async (req, res, next) => {
 
 const postUserCreateController = asyncHandler(async (req, res, next) => {
   try {
-    const { username, fullName, email, password, role, status, isVerify } =
-      req.body;
+    const { username, fullName, email, password, role } = req.body;
+
+    if (!username || !fullName || !email || !password || !role) {
+      throw new ApiResponse(400, {}, "Invalid input parameters!");
+    }
+
+    const findUserEmail = await User.findUser({ email });
+
+    if (findUserEmail) {
+      throw new ApiResponse(400, {}, "This username is already exits!");
+    }
+
+    const user = await User.createUser({
+      username,
+      fullName,
+      email,
+      password,
+      role,
+      status: UserStatusEnum.APPROVED,
+      isVerify: true,
+    });
+    // await user.save();
+    return res.status(201).json(user);
   } catch (error) {
+    console.log(error.message);
     next(error);
   }
 });
