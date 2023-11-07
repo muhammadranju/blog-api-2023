@@ -30,7 +30,11 @@ const postUserCreateController = asyncHandler(async (req, res, next) => {
     const findUserEmail = await User.findUser({ email });
 
     if (findUserEmail) {
-      throw new ApiResponse(400, {}, "This username is already exits!");
+      throw new ApiResponse(
+        400,
+        { email },
+        `This Email (${email}) is already exits!`
+      );
     }
 
     const user = await User.createUser({
@@ -42,7 +46,7 @@ const postUserCreateController = asyncHandler(async (req, res, next) => {
       status: UserStatusEnum.APPROVED,
       isVerify: true,
     });
-    // await user.save();
+    await user.save();
     return res.status(201).json(user);
   } catch (error) {
     console.log(error.message);
