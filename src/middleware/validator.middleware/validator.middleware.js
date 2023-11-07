@@ -1,6 +1,8 @@
 const { body } = require("express-validator");
 const User = require("../../libs/user.libs/user.libs");
 
+const ApiResponse = require("../../utils/ApiResponse");
+
 const loginValidation = [
   body("email")
     .trim()
@@ -40,7 +42,7 @@ const signupValidation = [
       username = username.split(" ").join("").toLowerCase();
       const existingUser = await User.findUsername({ username });
       if (existingUser) {
-        throw new Error("Username is already an exists.");
+        throw new ApiResponse(401, {}, "Username is already an exists.");
       }
     }),
   body("email")
@@ -56,7 +58,7 @@ const signupValidation = [
     .custom(async (email) => {
       const existingUser = await User.findUserEmail({ email });
       if (existingUser) {
-        throw new Error("Email is already an exists.");
+        throw new ApiResponse(401, {}, "Email is already an exists.");
       }
     }),
 
