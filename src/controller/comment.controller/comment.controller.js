@@ -16,7 +16,7 @@ const getCommentController = asyncHandler(async (_req, res, next) => {
 const postCommentCreateController = asyncHandler(async (req, res) => {
   const { post, bodyText } = req.body;
   if (!post || !bodyText) {
-    throw new ApiResponse(400, "fail", "Invalid comments parameters");
+    throw new ApiResponse(400, {}, "Invalid comments parameters");
   }
   const comment = await Comment.createComment({
     author: req.user.username,
