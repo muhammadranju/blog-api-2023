@@ -35,8 +35,8 @@ const createUser = async ({
   });
 };
 
-const findUserId = async ({ id }) => {
-  return await User.findById({ _id: id });
+const findUserId = async ({ userId }) => {
+  return await User.findById({ _id: userId });
 };
 
 const findUser = async ({ value }) => {
