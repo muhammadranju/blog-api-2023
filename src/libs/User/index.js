@@ -1,7 +1,18 @@
 const User = require("../../models/user.models/user.models");
 
-const getAllUser = async (value) => {
-  return await User.find({ status: value }).select("-password -__v ");
+const selectedUser = async (flag) => {
+  return await User.find({
+    $or: [
+      { status: flag },
+      { role: flag },
+      { email: flag },
+      { username: flag },
+    ],
+  }).select("-password -__v ");
+};
+
+const getAllUser = async () => {
+  return await User.find().select("-password -__v ");
 };
 
 const createUser = async ({
@@ -32,4 +43,4 @@ const findUser = async ({ email }) => {
   return await User.findOne({ email });
 };
 
-module.exports = { getAllUser, createUser, findUserId, findUser };
+module.exports = { selectedUser, getAllUser, createUser, findUserId, findUser };

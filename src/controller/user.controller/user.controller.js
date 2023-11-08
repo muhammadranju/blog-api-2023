@@ -1,15 +1,27 @@
 const User = require("../../libs/User");
+const { UserStatusEnum, VerifyStatus } = require("../../constants");
 
 const asyncHandler = require("../../utils/asyncHandler");
 const ApiResponse = require("../../utils/ApiResponse");
-const {
-  UserStatusEnum,
-  UserRolesEnum,
-  VerifyStatus,
-} = require("../../constants");
 
 const getUserController = asyncHandler(async (req, res, next) => {
   try {
+    const { flag } = req.query;
+    const { email, username } = req.body;
+    if (flag || email || username) {
+      const selectUser = await User.selectedUser(flag || email || username);
+
+      if (selectUser.length === 0) {
+        throw new ApiResponse(
+          404,
+          { status: flag || email || username },
+          `This status user not have yet.`
+        );
+      }
+      return res.status(200).json({
+        user: selectUser,
+      });
+    }
     const user = await User.getAllUser();
     return res.status(200).json({
       user,
