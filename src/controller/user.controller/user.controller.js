@@ -22,6 +22,7 @@ const getUserController = asyncHandler(async (req, res, next) => {
         user: selectUser,
       });
     }
+
     const user = await User.getAllUser();
     return res.status(200).json({
       user,
@@ -33,7 +34,15 @@ const getUserController = asyncHandler(async (req, res, next) => {
 
 const getUserSingleController = asyncHandler(async (req, res, next) => {
   try {
+    const { userId: value } = req.params;
+    const user = await User.findUser({ value });
+    console.log(value);
+    if (user === null) {
+      throw new ApiResponse(404, { user: value }, `Con't find this user yet.`);
+    }
+    return res.status(200).json({ user });
   } catch (error) {
+    // console.log(error);
     next(error);
   }
 });

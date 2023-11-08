@@ -39,8 +39,10 @@ const findUserId = async ({ id }) => {
   return await User.findById({ _id: id });
 };
 
-const findUser = async ({ email }) => {
-  return await User.findOne({ email });
+const findUser = async ({ value }) => {
+  return await User.findOne({
+    $or: [{ username: value }, { email: value }],
+  }).select("-password -__v");
 };
 
 module.exports = { selectedUser, getAllUser, createUser, findUserId, findUser };
