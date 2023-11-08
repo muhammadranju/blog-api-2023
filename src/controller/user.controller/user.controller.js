@@ -3,7 +3,11 @@ const Users = require("../../models/user.models/user.models");
 
 const asyncHandler = require("../../utils/asyncHandler");
 const ApiResponse = require("../../utils/ApiResponse");
-const { UserStatusEnum, UserRolesEnum } = require("../../constants");
+const {
+  UserStatusEnum,
+  UserRolesEnum,
+  VerifyStatus,
+} = require("../../constants");
 
 const getUserController = asyncHandler(async (req, res, next) => {
   try {
@@ -44,7 +48,7 @@ const postUserCreateController = asyncHandler(async (req, res, next) => {
       password,
       role,
       status: UserStatusEnum.APPROVED,
-      isVerify: true,
+      isVerify: VerifyStatus.verify,
     });
     await user.save();
     return res.status(201).json(user);
