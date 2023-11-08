@@ -32,10 +32,10 @@ const notFoundErrorHandler = (req, res, next) => {
 };
 
 const serverErrorHandler = (err, req, res, next) => {
-  res.status(err.statusCode).json({
-    // status: err.status,
-    // statusCode: err.statusCode,
-    // message: err.message,
+  res.status(err.statusCode || 500).json({
+    status: err.status || 500,
+    statusCode: err.statusCode,
+    message: err.message,
     stackTrace: err.stack,
     error: err,
   });
