@@ -33,11 +33,11 @@ const notFoundErrorHandler = (req, res, next) => {
 
 const serverErrorHandler = (err, req, res, next) => {
   res.status(err.statusCode || 500).json({
-    status: err.status || 500,
-    statusCode: err.statusCode,
+    status: err.status,
+    statusCode: err.statusCode || err.status,
     message: err.message,
-    stackTrace: err.stack,
     error: err,
+    stackTrace: err.stack,
   });
 
   if (process.env.NODE_ENV === "development") {
