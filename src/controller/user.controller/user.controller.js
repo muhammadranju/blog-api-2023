@@ -1,5 +1,4 @@
 const User = require("../../libs/User");
-const Users = require("../../models/user.models/user.models");
 
 const asyncHandler = require("../../utils/asyncHandler");
 const ApiResponse = require("../../utils/ApiResponse");
@@ -11,6 +10,10 @@ const {
 
 const getUserController = asyncHandler(async (req, res, next) => {
   try {
+    const user = await User.getAllUser();
+    return res.status(200).json({
+      user,
+    });
   } catch (error) {
     next(error);
   }

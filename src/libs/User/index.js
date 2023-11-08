@@ -1,5 +1,8 @@
 const User = require("../../models/user.models/user.models");
-const ApiResponse = require("../../utils/ApiResponse");
+
+const getAllUser = async (value) => {
+  return await User.find({ status: value }).select("-password -__v ");
+};
 
 const createUser = async ({
   username,
@@ -29,4 +32,4 @@ const findUser = async ({ email }) => {
   return await User.findOne({ email });
 };
 
-module.exports = { createUser, findUserId, findUser };
+module.exports = { getAllUser, createUser, findUserId, findUser };
