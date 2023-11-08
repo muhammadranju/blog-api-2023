@@ -1,5 +1,9 @@
 const User = require("../../models/user.models/user.models");
-const { roles, status, verifyStatus } = require("../../config/constants");
+const {
+  UserRolesEnum,
+  UserStatusEnum,
+  VerifyStatus,
+} = require("../../constants");
 
 const findAllUsers = async (limit = 10) => {
   return await User.find().select("username email role").limit(limit);
@@ -11,9 +15,9 @@ const userCreate = async ({ username, fullName, email, password }) => {
     fullName,
     email,
     password,
-    role: roles.user,
-    status: status.pending,
-    isVerify: verifyStatus.unverified,
+    role: UserRolesEnum.USER,
+    status: UserStatusEnum.PENDING,
+    isVerify: VerifyStatus.unverified,
   });
 };
 
