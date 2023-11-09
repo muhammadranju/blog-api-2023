@@ -55,7 +55,7 @@ const getArticlesController = asyncHandler(async (req, res, next) => {
 const postArticleController = asyncHandler(async (req, res, next) => {
   const errors = validationResult(req).formatWith(errorFormatter);
   if (!errors.isEmpty()) {
-    return res.status(400).json({ error: errors.mapped() });
+    throw new ApiResponse(400, {}, errors.mapped());
   }
 
   let { title, bodyText, cover, tags } = req.body;
@@ -73,7 +73,7 @@ const postArticleController = asyncHandler(async (req, res, next) => {
     author: req.user._id,
   });
 
-  // await post.save();
+  await post.save();
 
   return res.status(201).json({
     code: 201,
@@ -97,7 +97,6 @@ const getSingleArticleController = asyncHandler(async (req, res, next) => {
     { post: findOnePost.id },
     { status: constants.status.approved }
   );
-  console.log(comment);
 
   return res.status(200).json({
     data: findOnePost,
@@ -115,30 +114,35 @@ const putSingleArticlesUpdateController = asyncHandler(
 
 const patchSingleArticleUpdateController = asyncHandler(
   async (req, res, next) => {
-    const id = req.params.id;
+    const { id } = req.params;
     let { title, bodyText, cover, tags, status } = req.body;
+
+    const post = await Post.findSinglePost({ id });
+    if (!post) {
+      throw new ApiResponse(404, { title_url: id }, "The post was not found.");
+    }
     title ?? title;
     bodyText ?? bodyText;
     cover ?? cover;
     tags ?? tags;
     status ?? status;
 
-    const title_url = myUtils(title);
+    const title_url = title ? myUtils(title) : post.title_url;
+    tags = tags ? lowercaseText(tags, " ") : post.tags;
 
-    tags = lowercaseText(tags, " ");
+    post.title = title ? title : post.title;
+    post.bodyText = bodyText ? bodyText : post.bodyText;
+    post.title_url = title_url ? title_url : post.title_url;
+    post.cover = cover ? cover : post.cover;
+    post.tags = tags ? tags : post.tags;
+    post.status = status ? status : post.status;
 
-    const post = await Post.updatePost(
-      { _id: id },
-      title,
-      title_url,
-      bodyText,
-      cover,
-      tags,
-      status
-    );
+    await post.save({ validateBeforeSave: false });
 
     console.log(post);
-    return res.status(201).json(post);
+    return res
+      .status(201)
+      .json({ status: 204, message: "Post Successfully updated." });
   }
 );
 
