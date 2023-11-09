@@ -42,7 +42,7 @@ const signupValidation = [
       username = username.split(" ").join("").toLowerCase();
       const existingUser = await User.findUsername({ username });
       if (existingUser) {
-        throw new ApiResponse(401, {}, "Username is already an exists.");
+        throw new ApiResponse("Username is already an exists.");
       }
     }),
   body("email")
@@ -58,7 +58,7 @@ const signupValidation = [
     .custom(async (email) => {
       const existingUser = await User.findUserEmail({ email });
       if (existingUser) {
-        throw new ApiResponse(401, {}, "Email is already an exists.");
+        throw new ApiResponse("Email is already an exists.");
       }
     }),
 

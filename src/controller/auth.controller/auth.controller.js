@@ -1,19 +1,26 @@
 const { validationResult } = require("express-validator");
 
 const User = require("../../libs/user.libs/user.libs");
-const jwt = require("../../service/jwtGenerator.service/jwtGenerator.service"); // jwt generator function
-const EmailSend = require("../../service/emailSend.service/emailSend.service"); // email send function
+const ApiResponse = require("../../utils/ApiResponse");
+
+// jwt generator function
+const jwt = require("../../service/jwtGenerator.service/jwtGenerator.service");
+// email send function
+const EmailSend = require("../../service/emailSend.service/emailSend.service");
 
 const asyncHandler = require("../../utils/asyncHandler");
 const { verifyStatus } = require("../../config/constants");
-const hash = require("../../utils/passwordBcrypt.utils/passwordBcrypt.utils"); // password hash function
-const response = require("../../utils/response.utils/response.utils"); // response handel function
-const errorFormatter = require("../../utils/errorFormatter/errorFormatter"); // error formatter function
+
+// password hash function
+const hash = require("../../utils/passwordBcrypt.utils/passwordBcrypt.utils");
+
+// error formatter function
+const errorFormatter = require("../../utils/errorFormatter/errorFormatter");
 
 const postSignupController = asyncHandler(async (req, res, next) => {
   const errors = validationResult(req).formatWith(errorFormatter);
   if (!errors.isEmpty()) {
-    return res.status(400).json({ error: errors.mapped() });
+    throw new ApiResponse(400, {}, errors.mapped());
   }
 
   let { username, fullName, email, password } = req.body;
@@ -47,19 +54,19 @@ const postSignupController = asyncHandler(async (req, res, next) => {
 const postLoginController = asyncHandler(async (req, res, next) => {
   const errors = validationResult(req).formatWith(errorFormatter);
   if (!errors.isEmpty()) {
-    return res.status(400).json({ error: errors.mapped() });
+    throw new ApiResponse(400, {}, errors.mapped());
   }
   const { email, password } = req.body;
   const findUserEmail = await User.findUserEmail({ email });
 
   if (!findUserEmail) {
-    return response(res, "Invalid credential, email or password.", 400);
+    throw new ApiResponse(400, {}, "Invalid credential, email or password.");
   }
   if (findUserEmail.isVerify === false) {
-    return response(
-      res,
-      "You must be verify your email first. please try again later",
-      400
+    throw new ApiResponse(
+      400,
+      {},
+      "You must be verify your email first. please try again later"
     );
   }
 
@@ -69,7 +76,7 @@ const postLoginController = asyncHandler(async (req, res, next) => {
   );
 
   if (!compareBcryptPassword) {
-    return response(res, "Invalid credential, email or password.", 400);
+    throw new ApiResponse(400, {}, "Invalid credential, email or password.");
   }
   const payload = {
     user_id: findUserEmail._id,
@@ -90,27 +97,28 @@ const getVerifyEmailController = async (req, res, next) => {
     const token = req.params.verify;
 
     if (token === undefined) {
-      return response(res, "Unauthorized access", 401);
+      throw new ApiResponse(401, {}, "Unauthorized access");
     }
     const { email } = jwt.jwtVerifyToken(token);
     const findUser = await User.findUserEmail({ email });
 
     if (findUser.isVerify) {
-      return response(res, "Email is already verify.", 400);
+      throw new ApiResponse(400, {}, "Email is already verify.");
     }
 
     const user = await User.verifiedLink(findUser.id, {
       isVerify: verifyStatus.verify,
     });
     console.log(user);
-    return response(res, "Successfully email verified.✅", 200);
+    return res
+      .status(200)
+      .json({ status: 200, message: "Successfully email verified.✅" });
   } catch (error) {
-    console.log(error.message);
-    return response(res, `Your verify token link was expired!!`, 400);
+    throw new ApiResponse(400, {}, "Your verify token link was expired!!");
   }
 };
 
-const postForgotPassword = async (id) => {};
+const postForgotPassword = asyncHandler(async (req, res, next) => {});
 
 module.exports = {
   postSignupController,
