@@ -4,7 +4,7 @@ const myCache = new NodeCache({ stdTTL: 60 });
 const ApiResponse = require("../utils/ApiResponse");
 const User = require("../libs/user.libs/user.libs");
 
-const homeController = async (req, res, next) => {
+const homeController = async (_req, res, next) => {
   try {
     if (myCache.has("ranju")) {
       console.log("gating from cache");
@@ -21,21 +21,18 @@ const homeController = async (req, res, next) => {
   }
 };
 
-const notFoundErrorHandler = (req, res, next) => {
+const notFoundErrorHandler = (req, _res, next) => {
   const err = new ApiResponse(
     404,
     {},
     `Con't find ${req.originalUrl} on the server!`
   );
-
   next(err);
 };
 
-const serverErrorHandler = (err, req, res, next) => {
+const serverErrorHandler = (err, _req, res, _next) => {
   res.status(err.statusCode || 500).json({
     status: err.status,
-    statusCode: err.statusCode || err.status,
-    message: err.message,
     error: err,
     stackTrace: err.stack,
   });
