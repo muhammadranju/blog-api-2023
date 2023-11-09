@@ -141,23 +141,25 @@ const patchSingleArticleUpdateController = asyncHandler(
 
     console.log(post);
     return res
-      .status(201)
-      .json({ status: 204, message: "Post Successfully updated." });
+      .status(202)
+      .json({ status: 202, message: "Post Successfully updated." });
   }
 );
 
 const deleteSingleArticlesDeleteController = asyncHandler(
   async (req, res, next) => {
-    const id = req.params.id;
-    const postDelete = await Post.findPostAndDelete({ id });
-    if (!postDelete) {
-      throw new ApiResponse(404, "fail", "Post not available", 404);
+    const { id } = req.params;
+    console.log(id);
+    const post = await Post.findSinglePost({ id });
+
+    if (!post) {
+      throw new ApiResponse(404, { title_url: id }, "Post not available", 404);
     }
+    await post.deleteOne();
     console.log("Article deleted successfully");
-    return res.status(204).json({
-      postDelete,
-      status: 204,
-      message: "Article deleted successfully",
+    return res.status(202).json({
+      status: 202,
+      message: "Article deleted successfully.",
     });
   }
 );
