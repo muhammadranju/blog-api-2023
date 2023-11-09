@@ -33,6 +33,15 @@ router
       UserRolesEnum.EDITOR
     ),
     controller.patchUserUpdateController
+  )
+  .delete(
+    Authentication,
+    restricted(
+      UserRolesEnum.ADMIN,
+      UserRolesEnum.MANAGER,
+      UserRolesEnum.EDITOR
+    ),
+    controller.deleteUserDeleteController
   );
 
 router
