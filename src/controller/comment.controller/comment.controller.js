@@ -4,15 +4,26 @@ const Post = require("../../libs/post.libs/post.libs");
 const ApiResponse = require("../../utils/ApiResponse");
 const asyncHandler = require("../../utils/asyncHandler");
 
-const getCommentController = asyncHandler(async (_req, res, next) => {
+const getCommentController = asyncHandler(async (req, res, next) => {
+  const { author } = req.query;
+
+  if (author) {
+    const comment = await Comment.findOneComment({ value: author });
+    if (!comment) {
+      throw new ApiResponse(404, { author }, "This comment was not found.");
+    }
+  }
+
   const comment = await Comment.findAllComment();
   if (!comment.length) {
-    throw new ApiResponse(404, "fail", "Comment not found");
+    throw new ApiResponse(404, {}, "Comment was not available yet.");
   }
   return res.status(200).json({
+    status: 200,
     data: comment,
   });
 });
+
 const postCommentCreateController = asyncHandler(async (req, res) => {
   const { post, bodyText } = req.body;
   if (!post || !bodyText) {
@@ -35,33 +46,52 @@ const postCommentCreateController = asyncHandler(async (req, res) => {
 const putSingleCommentUpdateController = asyncHandler(async (req, res) => {
   const { id } = req.params;
   const { status } = req.body;
-  const comment = await Comment.commentApprovedUpdate(id, status);
+  const comment = await Comment.findComment({ id });
+
   if (!comment) {
-    throw new ApiResponse(404, "fail", "Comment not found.");
+    throw new ApiResponse(404, { id }, "Comment not found.");
   }
-  return res.status(200).json(comment);
+  comment.status = status ? status : comment.status;
+  await comment.save({ validateBeforeSave: false });
+  console.log(comment);
+  return res
+    .status(200)
+    .json({ message: "Comment successfully updated.", comment });
 });
 
 const patchSingleCommentUpdateController = asyncHandler(async (req, res) => {
   const { id } = req.params;
   const { bodyText } = req.body;
-  bodyText ?? bodyText;
-  const comment = await Comment.commentUpdate(id, { bodyText });
-  if (!comment) {
-    throw new ApiResponse(404, "fail", "Comment not found.");
-  }
-  console.log(bodyText);
 
-  return res.status(201).json(comment);
+  bodyText ?? bodyText;
+
+  const comment = await Comment.findComment({ id });
+  if (!comment) {
+    throw new ApiResponse(404, {}, "Comment not found.");
+  }
+
+  comment.bodyText = bodyText ? bodyText : comment.bodyText;
+  await comment.save({ validateBeforeSave: false });
+  console.log(bodyText);
+  console.log(comment);
+
+  return res
+    .status(201)
+    .json({ status: 202, message: "Comment successfully updated." });
 });
 const deleteSingleCommentDeleteController = asyncHandler(async (req, res) => {
   const { id } = req.params;
 
-  const comment = await Comment.commentDelete(id);
+  const comment = await Comment.findComment({ id });
   if (!comment) {
-    throw new ApiResponse(404, "fail", "Comment not found.");
+    throw new ApiResponse(404, { id }, "Comment not found.");
   }
-  return res.status(204).json(comment);
+  await comment.deleteOne();
+  console.log(comment);
+
+  return res
+    .status(202)
+    .json({ status: 204, message: "Comment successfully deleted." });
 });
 
 module.exports = {
