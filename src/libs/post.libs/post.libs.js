@@ -65,7 +65,7 @@ const findAllPosts = async ({ limit = 5, page = 1, sort, search = "" }) => {
     .select("-__v");
 };
 
-const findSinglePost = async ({ id }) => {
+const findPost = async ({ id }) => {
   return await Post.findOne({
     // $or: [{ _id: id }],
     // $or: [{ title_url: id }],
@@ -137,6 +137,6 @@ module.exports = {
   createPost,
   pushCommentInPost,
   updatePost,
-  findSinglePost,
+  findPost,
   findPostAndDelete,
 };

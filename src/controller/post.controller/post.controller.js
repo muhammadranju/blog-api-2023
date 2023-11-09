@@ -4,7 +4,7 @@ const shortId = require("shortid");
 const Post = require("../../libs/post.libs/post.libs");
 const Comment = require("../../libs/comment.libs/comment.libs");
 
-const constants = require("../../config/constants");
+const { UserCommentStatusEnum } = require("../../constants");
 const ApiResponse = require("../../utils/ApiResponse");
 const asyncHandler = require("../../utils/asyncHandler");
 const errorFormatter = require("../../utils/errorFormatter/errorFormatter");
@@ -61,7 +61,6 @@ const postArticleController = asyncHandler(async (req, res, next) => {
   let { title, bodyText, cover, tags } = req.body;
 
   const title_url = myUtils(title);
-
   tags = lowercaseText(tags, " ");
 
   const post = await Post.createPost({
@@ -89,13 +88,14 @@ const postArticleController = asyncHandler(async (req, res, next) => {
 
 const getSingleArticleController = asyncHandler(async (req, res, next) => {
   const { id } = req.params;
-  const findOnePost = await Post.findSinglePost({ id });
+  const findOnePost = await Post.findPost({ id });
+
   if (!findOnePost) {
-    throw new ApiResponse(404, "fail", "This post not was found.");
+    throw new ApiResponse(404, { title_url: id }, "This post not was found.");
   }
   const comment = await Comment.findCommentIsApproved(
     { post: findOnePost.id },
-    { status: constants.status.approved }
+    { status: UserCommentStatusEnum.APPROVED }
   );
 
   return res.status(200).json({
@@ -117,7 +117,7 @@ const patchSingleArticleUpdateController = asyncHandler(
     const { id } = req.params;
     let { title, bodyText, cover, tags, status } = req.body;
 
-    const post = await Post.findSinglePost({ id });
+    const post = await Post.findPost({ id });
     if (!post) {
       throw new ApiResponse(404, { title_url: id }, "The post was not found.");
     }
@@ -150,7 +150,7 @@ const deleteSingleArticlesDeleteController = asyncHandler(
   async (req, res, next) => {
     const { id } = req.params;
     console.log(id);
-    const post = await Post.findSinglePost({ id });
+    const post = await Post.findPost({ id });
 
     if (!post) {
       throw new ApiResponse(404, { title_url: id }, "Post not available", 404);
