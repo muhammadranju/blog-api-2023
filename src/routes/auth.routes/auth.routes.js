@@ -13,7 +13,11 @@ router.post(
   controller.postSignupController
 );
 
-router.route("/auth/forgot-password").post();
+router.route("/users/forgot-password").post(controller.postForgotPassword);
+
+router
+  .route("/users/reset-password/:resetToken")
+  .post(controller.postResetForgotPassword);
 
 router.get(
   "/users/verify-email/:verificationToken",

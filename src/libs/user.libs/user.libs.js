@@ -32,10 +32,16 @@ const findUsername = async ({ username }) => {
 };
 
 // this method only Verify user email on database
-const findUserVerify = async ({ value }) => {
+const userEmailVerify = async ({ value }) => {
   return await User.findOne({
     emailVerificationToken: value,
     emailVerificationExpiry: { $gt: Date.now() },
+  });
+}; // this method only Verify user email on database
+const userPasswordVerify = async ({ value }) => {
+  return await User.findOne({
+    forgotPasswordToken: value,
+    forgotPasswordExpiry: { $gt: Date.now() },
   });
 };
 
@@ -45,5 +51,6 @@ module.exports = {
   findUserById,
   findUserEmail,
   findUsername,
-  findUserVerify,
+  userEmailVerify,
+  userPasswordVerify,
 };

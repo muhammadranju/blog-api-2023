@@ -5,7 +5,11 @@ const ApiResponse = require("../../utils/ApiResponse");
 // jwt generator function
 const jwt = require("../../service/jwtGenerator.service/jwtGenerator.service");
 // email send function
-const emailSend = require("../../service/emailSend.service/emailSend.service");
+const {
+  sendEmail,
+  emailVerificationMailgenContent,
+  forgotPasswordMailgenContent,
+} = require("../../service/emailSend.service/emailSend.service");
 const asyncHandler = require("../../utils/asyncHandler");
 const { VerifyStatus, UserStatusEnum } = require("../../constants");
 const errorFormatter = require("../../utils/errorFormatter/errorFormatter");
@@ -16,7 +20,7 @@ const postSignupController = asyncHandler(async (req, res, next) => {
   if (!errors.isEmpty()) {
     throw new ApiResponse(400, {}, errors.mapped());
   }
-  sds;
+
   let { username, fullName, email, password } = req.body;
   username = username.split(" ").join("").toLowerCase();
 
@@ -29,16 +33,22 @@ const postSignupController = asyncHandler(async (req, res, next) => {
 
   const { unHashedToken, hashedToken, tokenExpiry } =
     user.generateTemporaryToken();
-  const tokenURL = `${req.protocol}://${req.get(
-    "host"
-  )}/api/v1/users/verify-email/${unHashedToken}`;
 
   user.emailVerificationToken = hashedToken;
   user.emailVerificationExpiry = tokenExpiry;
 
   if (user) {
     await user.save();
-    await emailSend({ email, name: fullName, token: tokenURL });
+    sendEmail({
+      email: user?.email,
+      subject: "Please verify your email",
+      mailgenContent: emailVerificationMailgenContent(
+        user.fullName,
+        `${req.protocol}://${req.get(
+          "host"
+        )}/api/v1/users/verify-email/${unHashedToken}`
+      ),
+    });
   }
 
   return res.status(201).json({
@@ -106,7 +116,7 @@ const getVerifyEmailController = asyncHandler(async (req, res, next) => {
     .update(verificationToken)
     .digest("hex");
 
-  const user = await User.findUserVerify({ value: hashedToken });
+  const user = await User.userEmailVerify({ value: hashedToken });
 
   if (!user) {
     throw new ApiResponse(409, {}, "Token is invalid or expired");
@@ -128,11 +138,73 @@ const getVerifyEmailController = asyncHandler(async (req, res, next) => {
     .json({ status: 200, message: "Successfully email verified.✅" });
 });
 
-const postForgotPassword = asyncHandler(async (req, res, next) => {});
+const postForgotPassword = asyncHandler(async (req, res, next) => {
+  const { email } = req.body;
+
+  const user = await User.findUserEmail({ email });
+  if (!user) {
+    throw new ApiResponse(404, {}, "User does not exists");
+  }
+
+  const { unHashedToken, hashedToken, tokenExpiry } =
+    user.generateTemporaryToken();
+
+  user.forgotPasswordToken = hashedToken;
+  user.forgotPasswordExpiry = tokenExpiry;
+
+  if (user) {
+    await user.save({ validateBeforeSave: false });
+    sendEmail({
+      email: user?.email,
+      subject: "Password reset request",
+      mailgenContent: forgotPasswordMailgenContent(
+        user.fullName,
+
+        // ! NOTE: Following link should be the link of the frontend page responsible to request password reset
+        // ! Frontend will send the below token with the new password in the request body to the backend reset password endpoint
+        // * Ideally take the url from the .env file which should be teh url of the frontend
+        `${req.protocol}://${req.get(
+          "host"
+        )}/api/v1/users/reset-password/${unHashedToken}`
+      ),
+    });
+  }
+  console.log(user);
+
+  return res.status(200).json({
+    status: 200,
+    message: "Password reset mail has been sent on your mail id",
+  });
+});
+const postResetForgotPassword = asyncHandler(async (req, res, next) => {
+  const { resetToken } = req.params;
+  const { newPassword } = req.body;
+  if (!newPassword) {
+    throw new ApiResponse(409, {}, "Pl");
+  }
+
+  let hashedToken = crypto
+    .createHash("sha256")
+    .update(resetToken)
+    .digest("hex");
+
+  const user = await User.userPasswordVerify({ value: hashedToken });
+
+  if (!user) {
+    throw new ApiResponse(409, {}, "Token is invalid or expired");
+  }
+
+  user.password = newPassword;
+  await user.save({ validateBeforeSave: false });
+
+  console.log(user);
+  res.status(200).json({ message: "Okk", user });
+});
 
 module.exports = {
   postSignupController,
   postLoginController,
   getVerifyEmailController,
   postForgotPassword,
+  postResetForgotPassword,
 };
