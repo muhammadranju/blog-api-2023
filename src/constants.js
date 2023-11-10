@@ -45,6 +45,17 @@ const PostStatusEnum = {
 const AvailablePostStatus = Object.values(PostStatusEnum);
 
 /**
+ * @type {{ GOOGLE: "GOOGLE"; GITHUB: "GITHUB"; EMAIL_PASSWORD: "EMAIL_PASSWORD"} as const}
+ */
+const UserLoginType = {
+  GOOGLE: "GOOGLE",
+  GITHUB: "GITHUB",
+  EMAIL_PASSWORD: "EMAIL_PASSWORD",
+};
+
+const AvailableSocialLogins = Object.values(UserLoginType);
+
+/**
  * @type {{ User:"User", Post:"Post", Comment:"Comment" } as const}
  */
 const ModelRefNames = {
@@ -54,11 +65,11 @@ const ModelRefNames = {
 };
 
 /**
- * @type {{ verify:true, unverified:false, } as const}
+ * @type {{ VERIFY:true, UNVERIFIED:false, } as const}
  */
 const VerifyStatus = {
-  verify: true,
-  unverified: false,
+  VERIFY: true,
+  UNVERIFIED: false,
 };
 const DATABASE_NAME = "BLOG-API-2023";
 const DATABASE_QUERY = "?retryWrites=true&w=majority";
@@ -73,6 +84,8 @@ module.exports = {
   PostStatusEnum,
   AvailablePostStatus,
   ModelRefNames,
+  AvailableSocialLogins,
+  UserLoginType,
   VerifyStatus,
   DATABASE_NAME,
   DATABASE_QUERY,

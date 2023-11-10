@@ -1,15 +1,23 @@
 const nodemailer = require("nodemailer");
 const jwt = require("../jwtGenerator.service/jwtGenerator.service");
 
+// const transporter = nodemailer.createTransport({
+//   service: "gmail",
+//   port: 465,
+//   secure: true,
+//   auth: {
+//     user: process.env.EMAIL,
+//     pass: process.env.EMAIL_PASSKEY,
+//   },
+// });
 const transporter = nodemailer.createTransport({
-  // host: "smtp.forwardemail.net",
-  service: "gmail",
-  port: 465,
-  secure: true,
+  host: process.env.EMAIL_SERVICE, // host for mailtrap
+  port: process.env.EMAIL_PORT,
+  // secure: true,
   auth: {
     // TODO: replace `user` and `pass` values from <https://forwardemail.net>
-    user: process.env.EMAIL,
-    pass: process.env.EMAIL_PASSKEY,
+    user: process.env.EMAIL_USERNAME,
+    pass: process.env.EMAIL_PASSWORD,
   },
 });
 
@@ -17,10 +25,11 @@ async function emailSend(userEmail, userName) {
   const payload = {
     email: userEmail,
   };
-  const token = jwt.jwtGeneratorSignToken(payload, "1d");
+  const token = jwt.jwtGeneratorSignToken(payload, "1m");
   // send mail with defined transport object
   const info = await transporter.sendMail({
-    from: `"Google 👻"${process.env.EMAIL}`, // sender address
+    // from: `"Google 👻"${process.env.EMAIL}`, // sender address
+    from: `"Google 👻"<ranju.mdranju@.com>`, // sender address
     to: `${userEmail}, ${userEmail}`, // list of receivers
     subject: "Verify email", // Subject line
     text: "Verify your email address", // plain text body
