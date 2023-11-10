@@ -1,25 +1,22 @@
 const { validationResult } = require("express-validator");
-
+const crypto = require("crypto");
 const User = require("../../libs/user.libs/user.libs");
 const ApiResponse = require("../../utils/ApiResponse");
-
 // jwt generator function
 const jwt = require("../../service/jwtGenerator.service/jwtGenerator.service");
 // email send function
-const EmailSend = require("../../service/emailSend.service/emailSend.service");
-
+const emailSend = require("../../service/emailSend.service/emailSend.service");
 const asyncHandler = require("../../utils/asyncHandler");
-const { VerifyStatus } = require("../../constants");
-
-// error formatter function
+const { VerifyStatus, UserStatusEnum } = require("../../constants");
 const errorFormatter = require("../../utils/errorFormatter/errorFormatter");
+// error formatter function
 
 const postSignupController = asyncHandler(async (req, res, next) => {
   const errors = validationResult(req).formatWith(errorFormatter);
   if (!errors.isEmpty()) {
     throw new ApiResponse(400, {}, errors.mapped());
   }
-
+  sds;
   let { username, fullName, email, password } = req.body;
   username = username.split(" ").join("").toLowerCase();
 
@@ -30,13 +27,21 @@ const postSignupController = asyncHandler(async (req, res, next) => {
     password,
   });
 
+  const { unHashedToken, hashedToken, tokenExpiry } =
+    user.generateTemporaryToken();
+  const tokenURL = `${req.protocol}://${req.get(
+    "host"
+  )}/api/v1/users/verify-email/${unHashedToken}`;
+
+  user.emailVerificationToken = hashedToken;
+  user.emailVerificationExpiry = tokenExpiry;
+
   if (user) {
-    EmailSend(email, fullName);
     await user.save();
+    await emailSend({ email, name: fullName, token: tokenURL });
   }
 
   return res.status(201).json({
-    user,
     code: 201,
     message: "Signup successful",
     verify:
@@ -90,24 +95,34 @@ const postLoginController = asyncHandler(async (req, res, next) => {
 });
 
 const getVerifyEmailController = asyncHandler(async (req, res, next) => {
-  const token = req.params.verify;
+  const { verificationToken } = req.params;
 
-  if (token === undefined) {
-    throw new ApiResponse(401, {}, "Unauthorized access");
-  }
-  const { email } = jwt.jwtVerifyToken(token);
-  const findUser = await User.findUserEmail({ email });
-
-  if (findUser.isVerify) {
-    throw new ApiResponse(400, {}, "Email is already verify.");
+  if (!verificationToken) {
+    throw new ApiResponse(400, {}, "Email verification token is missing");
   }
 
-  const user = await User.verifiedLink({ id: findUser.id });
+  let hashedToken = crypto
+    .createHash("sha256")
+    .update(verificationToken)
+    .digest("hex");
+
+  const user = await User.findUserVerify({ value: hashedToken });
+
   if (!user) {
-    throw new ApiResponse(400, {}, "This user not valid.");
+    throw new ApiResponse(409, {}, "Token is invalid or expired");
   }
+
+  // If we found the user that means the token is valid
+  // Now we can remove the associated email token and expiry date as we no  longer need them
+  user.emailVerificationToken = undefined;
+  user.emailVerificationExpiry = undefined;
+
+  // Tun the email verified flag to `true`
   user.isVerify = VerifyStatus.VERIFY;
+  user.status = UserStatusEnum.APPROVED;
   await user.save({ validateBeforeSave: false });
+
+  console.log(user);
   return res
     .status(200)
     .json({ status: 200, message: "Successfully email verified.✅" });

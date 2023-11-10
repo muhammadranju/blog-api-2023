@@ -15,6 +15,9 @@ router.post(
 
 router.route("/auth/forgot-password").post();
 
-router.get("/user/verify/:verify", controller.getVerifyEmailController);
+router.get(
+  "/users/verify-email/:verificationToken",
+  controller.getVerifyEmailController
+);
 
 module.exports = router;

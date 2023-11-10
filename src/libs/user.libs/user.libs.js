@@ -31,8 +31,12 @@ const findUsername = async ({ username }) => {
   return await User.findOne({ username: username });
 };
 
-const verifiedLink = async ({ id }) => {
-  return await User.findById({ _id: id });
+// this method only Verify user email on database
+const findUserVerify = async ({ value }) => {
+  return await User.findOne({
+    emailVerificationToken: value,
+    emailVerificationExpiry: { $gt: Date.now() },
+  });
 };
 
 module.exports = {
@@ -41,5 +45,5 @@ module.exports = {
   findUserById,
   findUserEmail,
   findUsername,
-  verifiedLink,
+  findUserVerify,
 };
