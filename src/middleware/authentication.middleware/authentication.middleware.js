@@ -25,9 +25,7 @@ async function authentication(req, res, next) {
 
     return next();
   } catch (error) {
-    console.log(error.message);
     return response(res, "Unauthorized invalid token", 401);
-    return next(error);
   }
 }
 module.exports = authentication;

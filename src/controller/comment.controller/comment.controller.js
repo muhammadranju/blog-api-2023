@@ -53,7 +53,6 @@ const putSingleCommentUpdateController = asyncHandler(async (req, res) => {
   }
   comment.status = status ? status : comment.status;
   await comment.save({ validateBeforeSave: false });
-  console.log(comment);
   return res
     .status(200)
     .json({ message: "Comment successfully updated.", comment });
@@ -72,8 +71,6 @@ const patchSingleCommentUpdateController = asyncHandler(async (req, res) => {
 
   comment.bodyText = bodyText ? bodyText : comment.bodyText;
   await comment.save({ validateBeforeSave: false });
-  console.log(bodyText);
-  console.log(comment);
 
   return res
     .status(201)
@@ -87,7 +84,6 @@ const deleteSingleCommentDeleteController = asyncHandler(async (req, res) => {
     throw new ApiResponse(404, { id }, "Comment not found.");
   }
   await comment.deleteOne();
-  console.log(comment);
 
   return res
     .status(202)

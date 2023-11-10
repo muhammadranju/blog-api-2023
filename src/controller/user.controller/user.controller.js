@@ -95,7 +95,6 @@ const patchUserUpdateController = asyncHandler(async (req, res, next) => {
   user.role = role ? role : user.role;
 
   await user.save({ validateBeforeSave: false });
-  // console.log(user);
   return res.status(201).json({
     status: 201,
     message: "Successfully update information.",
@@ -107,7 +106,6 @@ const deleteUserDeleteController = asyncHandler(async (req, res, next) => {
   if (!user) {
     throw new ApiResponse(404, {}, "This user not available yet.");
   }
-  console.log(user);
   await user.deleteOne();
   return res
     .status(202)

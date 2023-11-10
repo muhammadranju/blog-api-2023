@@ -90,7 +90,7 @@ const postLoginController = asyncHandler(async (req, res, next) => {
   const token = user.generateAccessToken();
 
   return res.status(200).json({
-    status: 200,
+    statusCode: 200,
     message: "User login successfully!",
     token,
     status: isMatch,
