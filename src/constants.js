@@ -20,6 +20,8 @@ const UserStatusEnum = {
   DECLINE: "DECLINE",
 };
 
+const AvailableUserStatus = Object.values(UserStatusEnum);
+
 /**
  * @type {{ APPROVED:"APPROVED", PENDING:"PENDING", SUSPENDED:"SUSPENDED"} as const}
  */
@@ -28,6 +30,9 @@ const UserCommentStatusEnum = {
   PENDING: "PENDING",
   SUSPENDED: "SUSPENDED",
 };
+
+const AvailableCommentStatus = Object.values(UserCommentStatusEnum);
+
 /**
  * @type {{ PENDING:"PENDING", PUBLISHED:"PUBLISHED", DRAFT:"DRAFT" } as const}
  */
@@ -62,7 +67,9 @@ module.exports = {
   UserRolesEnum,
   AvailableUserRoles,
   UserStatusEnum,
+  AvailableUserStatus,
   UserCommentStatusEnum,
+  AvailableCommentStatus,
   PostStatusEnum,
   AvailablePostStatus,
   ModelRefNames,
