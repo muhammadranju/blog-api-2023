@@ -1,6 +1,15 @@
 const router = require("express").Router();
 const controller = require("../../controller/auth.controller/auth.controller");
 const validator = require("../../middleware/validator.middleware/validator.middleware");
+const Authentication = require("../../middleware/authentication.middleware/authentication.middleware");
+
+router
+  .route("/users/verify-email/:verificationToken")
+  .get(controller.getVerifyEmailController);
+
+router
+  .route("/users/reset-password/:resetToken")
+  .post(controller.postResetForgotPassword);
 
 router.post(
   "/auth/login",
@@ -14,14 +23,8 @@ router.post(
 );
 
 router.route("/users/forgot-password").post(controller.postForgotPassword);
-
 router
-  .route("/users/reset-password/:resetToken")
-  .post(controller.postResetForgotPassword);
-
-router.get(
-  "/users/verify-email/:verificationToken",
-  controller.getVerifyEmailController
-);
+  .route("/users/change-password")
+  .post(Authentication, controller.postChangePassword);
 
 module.exports = router;

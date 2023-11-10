@@ -201,10 +201,34 @@ const postResetForgotPassword = asyncHandler(async (req, res, next) => {
   res.status(200).json({ message: "Okk", user });
 });
 
+const postChangePassword = asyncHandler(async (req, res) => {
+  const { oldPassword, newPassword, conformPassword } = req.body;
+
+  if (newPassword !== conformPassword) {
+    console.log("okk");
+    throw new ApiResponse(400, {}, "Password or Conform Password don't match.");
+  }
+
+  const user = await User.findUserById(req.user._id);
+
+  const isMatch = await user.compareBcryptPassword(oldPassword, user.password);
+  if (!isMatch) {
+    throw new ApiResponse(400, {}, "Password don't match.");
+  }
+
+  user.password = newPassword;
+  await user.save({ validateBeforeSave: false });
+  console.log(user);
+  return res
+    .status(200)
+    .json({ status: 200, message: "Password successfully change." });
+});
+
 module.exports = {
   postSignupController,
   postLoginController,
   getVerifyEmailController,
   postForgotPassword,
   postResetForgotPassword,
+  postChangePassword,
 };
