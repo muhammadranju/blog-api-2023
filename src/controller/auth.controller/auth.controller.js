@@ -2,8 +2,6 @@ const { validationResult } = require("express-validator");
 const crypto = require("crypto");
 const User = require("../../libs/user.libs/user.libs");
 const ApiResponse = require("../../utils/ApiResponse");
-// jwt generator function
-const jwt = require("../../service/jwtGenerator.service/jwtGenerator.service");
 // email send function
 const {
   sendEmail,
@@ -52,7 +50,7 @@ const postSignupController = asyncHandler(async (req, res, next) => {
   }
 
   return res.status(201).json({
-    code: 201,
+    status: 201,
     message: "Signup successful",
     verify:
       "You must be verify your email before you login, Verify link will be expired in 30 minutes.",
@@ -83,21 +81,16 @@ const postLoginController = asyncHandler(async (req, res, next) => {
     );
   }
 
-  const isMatch = await user.compareBcryptPassword(password, user.password);
-  console.log(isMatch);
+  const isMatch = await user.compareBcryptPassword(password);
 
   if (!isMatch) {
     throw new ApiResponse(400, {}, "Invalid credential, email or password.");
   }
-  const payload = {
-    user_id: user._id,
-    name: user.fullName,
-    email: user.email,
-    isLogin: isMatch,
-  };
-  const token = jwt.jwtGeneratorSignToken(payload, "1d");
 
-  return res.json({
+  const token = user.generateAccessToken();
+
+  return res.status(200).json({
+    status: 200,
     message: "User login successfully!",
     token,
     status: isMatch,
@@ -132,7 +125,6 @@ const getVerifyEmailController = asyncHandler(async (req, res, next) => {
   user.status = UserStatusEnum.APPROVED;
   await user.save({ validateBeforeSave: false });
 
-  console.log(user);
   return res
     .status(200)
     .json({ status: 200, message: "Successfully email verified.✅" });
@@ -169,7 +161,6 @@ const postForgotPassword = asyncHandler(async (req, res, next) => {
       ),
     });
   }
-  console.log(user);
 
   return res.status(200).json({
     status: 200,
@@ -197,28 +188,25 @@ const postResetForgotPassword = asyncHandler(async (req, res, next) => {
   user.password = newPassword;
   await user.save({ validateBeforeSave: false });
 
-  console.log(user);
   res.status(200).json({ message: "Okk", user });
 });
 
 const postChangePassword = asyncHandler(async (req, res) => {
-  const { oldPassword, newPassword, conformPassword } = req.body;
+  const { password, newPassword, conformPassword } = req.body;
 
   if (newPassword !== conformPassword) {
-    console.log("okk");
     throw new ApiResponse(400, {}, "Password or Conform Password don't match.");
   }
 
   const user = await User.findUserById(req.user._id);
 
-  const isMatch = await user.compareBcryptPassword(oldPassword, user.password);
+  const isMatch = await user.compareBcryptPassword(password);
   if (!isMatch) {
     throw new ApiResponse(400, {}, "Password don't match.");
   }
 
   user.password = newPassword;
   await user.save({ validateBeforeSave: false });
-  console.log(user);
   return res
     .status(200)
     .json({ status: 200, message: "Password successfully change." });

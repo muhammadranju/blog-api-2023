@@ -1,6 +1,8 @@
 const { Schema, model } = require("mongoose");
 const bcrypt = require("bcrypt");
 const crypto = require("crypto");
+const jwt = require("jsonwebtoken");
+
 const {
   UserRolesEnum,
   UserStatusEnum,
@@ -19,6 +21,7 @@ const userSchema = new Schema(
       lowercase: true,
       trim: true,
       unique: true,
+      index: true,
     },
     fullName: {
       type: String,
@@ -82,11 +85,31 @@ userSchema.pre("save", async function (next) {
 });
 
 // compare password
-userSchema.methods.compareBcryptPassword = async function (
-  password,
-  passwordDB
-) {
-  return await bcrypt.compare(password, passwordDB);
+userSchema.methods.compareBcryptPassword = async function (password) {
+  return await bcrypt.compare(password, this.password);
+};
+
+userSchema.methods.generateAccessToken = function () {
+  return jwt.sign(
+    {
+      user_id: this._id,
+      email: this.email,
+      username: this.username,
+      role: this.role,
+    },
+    process.env.ACCESS_TOKEN_SECRET,
+    { expiresIn: process.env.ACCESS_TOKEN_EXPIRY }
+  );
+};
+
+userSchema.methods.generateRefreshToken = function () {
+  return jwt.sign(
+    {
+      _id: this._id,
+    },
+    process.env.REFRESH_TOKEN_SECRET,
+    { expiresIn: process.env.REFRESH_TOKEN_EXPIRY }
+  );
 };
 
 userSchema.methods.generateTemporaryToken = function () {
