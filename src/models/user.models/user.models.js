@@ -5,6 +5,10 @@ const {
   UserStatusEnum,
   ModelRefNames,
   VerifyStatus,
+  AvailableUserRoles,
+  AvailableUserStatus,
+  AvailableSocialLogins,
+  UserLoginType,
 } = require("../../constants");
 const userSchema = new Schema(
   {
@@ -33,27 +37,37 @@ const userSchema = new Schema(
     },
     role: {
       type: String,
-      enum: [
-        UserRolesEnum.ADMIN,
-        UserRolesEnum.EDITOR,
-        UserRolesEnum.USER,
-        UserRolesEnum.MANAGER,
-      ],
+      enum: AvailableUserRoles,
       default: UserRolesEnum.USER,
+    },
+    loginType: {
+      type: String,
+      enum: AvailableSocialLogins,
+      default: UserLoginType.EMAIL_PASSWORD,
     },
     status: {
       type: String,
-      enum: [
-        UserStatusEnum.PENDING,
-        UserStatusEnum.APPROVED,
-        UserStatusEnum.BLOCK,
-        UserStatusEnum.DECLINE,
-      ],
+      enum: AvailableUserStatus,
       default: UserStatusEnum.APPROVED,
     },
     isVerify: {
       type: Boolean,
-      default: VerifyStatus.unverified,
+      default: VerifyStatus.UNVERIFIED,
+    },
+    refreshToken: {
+      type: String,
+    },
+    forgotPasswordToken: {
+      type: String,
+    },
+    forgotPasswordExpiry: {
+      type: Date,
+    },
+    emailVerificationToken: {
+      type: String,
+    },
+    emailVerificationExpiry: {
+      type: Date,
     },
   },
   { timestamps: true }
@@ -65,6 +79,14 @@ userSchema.pre("save", async function (next) {
   this.password = await bcrypt.hash(this.password, salt);
   next();
 });
+
+// compare password
+userSchema.methods.compareBcryptPassword = async function (
+  password,
+  passwordDB
+) {
+  return await bcrypt.compare(password, passwordDB);
+};
 
 const User = model(ModelRefNames.User, userSchema);
 module.exports = User;

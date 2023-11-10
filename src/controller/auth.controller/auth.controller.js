@@ -9,10 +9,7 @@ const jwt = require("../../service/jwtGenerator.service/jwtGenerator.service");
 const EmailSend = require("../../service/emailSend.service/emailSend.service");
 
 const asyncHandler = require("../../utils/asyncHandler");
-const { verifyStatus } = require("../../config/constants");
-
-// password hash function
-const hash = require("../../utils/passwordBcrypt.utils/passwordBcrypt.utils");
+const { VerifyStatus } = require("../../constants");
 
 // error formatter function
 const errorFormatter = require("../../utils/errorFormatter/errorFormatter");
@@ -57,12 +54,13 @@ const postLoginController = asyncHandler(async (req, res, next) => {
     throw new ApiResponse(400, {}, errors.mapped());
   }
   const { email, password } = req.body;
-  const findUserEmail = await User.findUserEmail({ email });
+  const user = await User.findUserEmail({ email });
 
-  if (!findUserEmail) {
+  if (!user) {
     throw new ApiResponse(400, {}, "Invalid credential, email or password.");
   }
-  if (findUserEmail.isVerify === false) {
+
+  if (user.isVerify === false) {
     throw new ApiResponse(
       400,
       {},
@@ -70,53 +68,50 @@ const postLoginController = asyncHandler(async (req, res, next) => {
     );
   }
 
-  const compareBcryptPassword = await hash.compareBcryptPassword(
-    password,
-    findUserEmail.password
-  );
+  const isMatch = await user.compareBcryptPassword(password, user.password);
+  console.log(isMatch);
 
-  if (!compareBcryptPassword) {
+  if (!isMatch) {
     throw new ApiResponse(400, {}, "Invalid credential, email or password.");
   }
   const payload = {
-    user_id: findUserEmail._id,
-    name: findUserEmail.fullName,
-    email: findUserEmail.email,
-    isLogin: compareBcryptPassword,
+    user_id: user._id,
+    name: user.fullName,
+    email: user.email,
+    isLogin: isMatch,
   };
   const token = jwt.jwtGeneratorSignToken(payload, "1d");
+
   return res.json({
     message: "User login successfully!",
     token,
-    status: compareBcryptPassword,
+    status: isMatch,
   });
 });
 
-const getVerifyEmailController = async (req, res, next) => {
-  try {
-    const token = req.params.verify;
+const getVerifyEmailController = asyncHandler(async (req, res, next) => {
+  const token = req.params.verify;
 
-    if (token === undefined) {
-      throw new ApiResponse(401, {}, "Unauthorized access");
-    }
-    const { email } = jwt.jwtVerifyToken(token);
-    const findUser = await User.findUserEmail({ email });
-
-    if (findUser.isVerify) {
-      throw new ApiResponse(400, {}, "Email is already verify.");
-    }
-
-    const user = await User.verifiedLink(findUser.id, {
-      isVerify: verifyStatus.verify,
-    });
-    console.log(user);
-    return res
-      .status(200)
-      .json({ status: 200, message: "Successfully email verified.✅" });
-  } catch (error) {
-    throw new ApiResponse(400, {}, "Your verify token link was expired!!");
+  if (token === undefined) {
+    throw new ApiResponse(401, {}, "Unauthorized access");
   }
-};
+  const { email } = jwt.jwtVerifyToken(token);
+  const findUser = await User.findUserEmail({ email });
+
+  if (findUser.isVerify) {
+    throw new ApiResponse(400, {}, "Email is already verify.");
+  }
+
+  const user = await User.verifiedLink({ id: findUser.id });
+  if (!user) {
+    throw new ApiResponse(400, {}, "This user not valid.");
+  }
+  user.isVerify = VerifyStatus.VERIFY;
+  await user.save({ validateBeforeSave: false });
+  return res
+    .status(200)
+    .json({ status: 200, message: "Successfully email verified.✅" });
+});
 
 const postForgotPassword = asyncHandler(async (req, res, next) => {});
 

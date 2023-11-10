@@ -31,12 +31,8 @@ const findUsername = async ({ username }) => {
   return await User.findOne({ username: username });
 };
 
-const verifiedLink = async (id, updated) => {
-  return await User.findByIdAndUpdate(
-    { _id: id },
-    { isVerify: Boolean(updated) },
-    { new: true }
-  );
+const verifiedLink = async ({ id }) => {
+  return await User.findById({ _id: id });
 };
 
 module.exports = {
