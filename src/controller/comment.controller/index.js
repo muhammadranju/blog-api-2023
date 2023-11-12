@@ -1,5 +1,5 @@
-const Comment = require("../../libs/comment.libs/comment.libs");
-const Post = require("../../libs/post.libs/post.libs");
+const Comment = require("../../libs/comment.libs");
+const Post = require("../../libs/post.libs");
 
 const ApiResponse = require("../../utils/ApiResponse");
 const asyncHandler = require("../../utils/asyncHandler");

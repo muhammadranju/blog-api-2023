@@ -1,8 +1,8 @@
 const { validationResult } = require("express-validator");
 const shortId = require("shortid");
 
-const Post = require("../../libs/post.libs/post.libs");
-const Comment = require("../../libs/comment.libs/comment.libs");
+const Post = require("../../libs/post.libs");
+const Comment = require("../../libs/comment.libs");
 
 const { UserCommentStatusEnum } = require("../../constants");
 const ApiResponse = require("../../utils/ApiResponse");

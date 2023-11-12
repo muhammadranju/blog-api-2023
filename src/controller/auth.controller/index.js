@@ -1,6 +1,6 @@
 const { validationResult } = require("express-validator");
 const crypto = require("crypto");
-const User = require("../../libs/user.libs/user.libs");
+const User = require("../../libs/user.libs");
 const ApiResponse = require("../../utils/ApiResponse");
 // email send function
 const {
