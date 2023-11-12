@@ -1,5 +1,5 @@
 const { body } = require("express-validator");
-const User = require("../../libs/user.libs/user.libs");
+const User = require("../../libs/user.libs");
 
 const ApiResponse = require("../../utils/ApiResponse");
 
