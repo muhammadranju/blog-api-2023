@@ -1,7 +1,10 @@
 const express = require("express");
 const app = express();
 
-const { notFoundErrorHandler, serverErrorHandler } = require("../controller");
+const {
+  notFoundErrorHandler,
+  serverErrorHandler,
+} = require("../controller/home.controller");
 const middleware = require("./middleware");
 const routes = require("../routes");
 

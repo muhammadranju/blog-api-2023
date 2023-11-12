@@ -1,3 +1,5 @@
+const ApiVersion = "/api/v1";
+
 /**
  * @type {{ ADMIN:"ADMIN", USER:"USER", EDITOR:"EDITOR", MANAGER:"MANAGER" } as const}
  */
@@ -89,4 +91,5 @@ module.exports = {
   VerifyStatus,
   DATABASE_NAME,
   DATABASE_QUERY,
+  ApiVersion,
 };
