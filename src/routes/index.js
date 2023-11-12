@@ -1,15 +1,15 @@
 const router = require("express").Router();
-const userRoute = require("./user.routes/user.routes");
-const homeRoute = require("./home.routes/home.routes");
-const postRoute = require("./post.routes/post.routes");
-const authRoute = require("./auth.routes/auth.routes");
-const commentRoute = require("./comment.routes/comment.routes");
+const { ApiVersion } = require("../constants");
 
-const apiURL = "/api/v1";
+const userRoute = require("./user.routes");
+const homeRoute = require("./home.routes");
+const postRoute = require("./post.routes");
+const authRoute = require("./auth.routes");
+const commentRoute = require("./comment.routes");
 
-router.use(apiURL, homeRoute);
-router.use(apiURL, postRoute);
-router.use(apiURL, authRoute);
-router.use(apiURL, commentRoute);
-router.use(apiURL, userRoute);
+router.use(ApiVersion, homeRoute);
+router.use(ApiVersion, postRoute);
+router.use(ApiVersion, authRoute);
+router.use(ApiVersion, commentRoute);
+router.use(ApiVersion, userRoute);
 module.exports = router;
