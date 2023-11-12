@@ -1,4 +1,4 @@
-const User = require("../../models/user.models/user.models");
+const User = require("../../models/user.models");
 
 // this function will return with given flag to find all user or single user
 // this function only can use admin

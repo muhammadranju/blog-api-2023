@@ -1,4 +1,4 @@
-const Comment = require("../../models/comment.models/comment.models");
+const Comment = require("../../models/comment.models");
 
 const findAllComment = async (filter) => {
   if (filter) {

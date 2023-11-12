@@ -1,4 +1,4 @@
-const Post = require("../../models/post.models/post.models");
+const Post = require("../../models/post.models");
 const defaults = require("../../config/defaults");
 
 const findAllItems = async ({
