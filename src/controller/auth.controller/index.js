@@ -13,6 +13,9 @@ const { VerifyStatus, UserStatusEnum } = require("../../constants");
 const errorFormatter = require("../../utils/errorFormatter/errorFormatter");
 // error formatter function
 
+/**
+ * THIS FUNCTION IS RETURN SIGNUP METHOD
+ */
 const postSignupController = asyncHandler(async (req, res, next) => {
   const errors = validationResult(req).formatWith(errorFormatter);
   if (!errors.isEmpty()) {
@@ -61,6 +64,9 @@ const postSignupController = asyncHandler(async (req, res, next) => {
   });
 });
 
+/**
+ * THIS FUNCTION IS RETURN LOGIN METHOD
+ */
 const postLoginController = asyncHandler(async (req, res, next) => {
   const errors = validationResult(req).formatWith(errorFormatter);
   if (!errors.isEmpty()) {
@@ -97,6 +103,9 @@ const postLoginController = asyncHandler(async (req, res, next) => {
   });
 });
 
+/**
+ * THIS FUNCTION IS RETURN EMAIL VERIFICATION METHOD
+ */
 const getVerifyEmailController = asyncHandler(async (req, res, next) => {
   const { verificationToken } = req.params;
 
@@ -130,6 +139,9 @@ const getVerifyEmailController = asyncHandler(async (req, res, next) => {
     .json({ status: 200, message: "Successfully email verified.✅" });
 });
 
+/**
+ * THIS FUNCTION IS RETURN USER FORGOT PASSWORD METHOD
+ */
 const postForgotPassword = asyncHandler(async (req, res, next) => {
   const { email } = req.body;
 
@@ -167,6 +179,10 @@ const postForgotPassword = asyncHandler(async (req, res, next) => {
     message: "Password reset mail has been sent on your mail id",
   });
 });
+
+/**
+ * THIS FUNCTION IS RETURN USER RESET PASSWORD METHOD
+ */
 const postResetForgotPassword = asyncHandler(async (req, res, next) => {
   const { resetToken } = req.params;
   const { newPassword } = req.body;
@@ -191,6 +207,9 @@ const postResetForgotPassword = asyncHandler(async (req, res, next) => {
   res.status(200).json({ message: "Okk", user });
 });
 
+/**
+ * THIS FUNCTION IS RETURN USER CHANGE PASSWORD METHOD
+ */
 const postChangePassword = asyncHandler(async (req, res) => {
   const { password, newPassword, conformPassword } = req.body;
 
