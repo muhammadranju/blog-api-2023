@@ -20,6 +20,9 @@ const myUtils = (title) => {
 };
 /*========================================================================================== */
 
+/**
+ * THIS FUNCTION IS RETURN ALL OF ARTICLE POSTS METHOD
+ */
 const getArticlesController = asyncHandler(async (req, res, next) => {
   const { limit, page, search } = req.query;
 
@@ -52,6 +55,9 @@ const getArticlesController = asyncHandler(async (req, res, next) => {
   });
 });
 
+/**
+ * THIS FUNCTION IS RETURN CREATE ARTICLE POST METHOD
+ */
 const postArticleController = asyncHandler(async (req, res, next) => {
   const errors = validationResult(req).formatWith(errorFormatter);
   if (!errors.isEmpty()) {
@@ -86,6 +92,9 @@ const postArticleController = asyncHandler(async (req, res, next) => {
   });
 });
 
+/**
+ * THIS FUNCTION IS RETURN SINGLE ARTICLE POST METHOD
+ */
 const getSingleArticleController = asyncHandler(async (req, res, next) => {
   const { id } = req.params;
   const findOnePost = await Post.findPost({ id });
@@ -112,6 +121,9 @@ const putSingleArticlesUpdateController = asyncHandler(
   async (req, res, next) => {}
 );
 
+/**
+ * THIS FUNCTION IS RETURN UPDATE SINGLE ARTICLE POST METHOD
+ */
 const patchSingleArticleUpdateController = asyncHandler(
   async (req, res, next) => {
     const { id } = req.params;
@@ -145,6 +157,9 @@ const patchSingleArticleUpdateController = asyncHandler(
   }
 );
 
+/**
+ * THIS FUNCTION IS RETURN SINGLE DELETE ARTICLE POST METHOD
+ */
 const deleteSingleArticlesDeleteController = asyncHandler(
   async (req, res, next) => {
     const { id } = req.params;
