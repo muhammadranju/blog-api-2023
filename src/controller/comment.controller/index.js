@@ -4,6 +4,9 @@ const Post = require("../../libs/post.libs");
 const ApiResponse = require("../../utils/ApiResponse");
 const asyncHandler = require("../../utils/asyncHandler");
 
+/**
+ * THIS FUNCTION IS RETURN ALL OF COMMENTS METHOD
+ */
 const getCommentController = asyncHandler(async (req, res, next) => {
   const { author } = req.query;
 
@@ -24,6 +27,9 @@ const getCommentController = asyncHandler(async (req, res, next) => {
   });
 });
 
+/**
+ * THIS FUNCTION IS RETURN CREATE A COMMENTS METHOD
+ */
 const postCommentCreateController = asyncHandler(async (req, res) => {
   const { post, bodyText } = req.body;
   if (!post || !bodyText) {
@@ -43,6 +49,9 @@ const postCommentCreateController = asyncHandler(async (req, res) => {
     .json({ message: "Comment created successfully.", comment });
 });
 
+/**
+ * THIS FUNCTION IS RETURN UPDATE A SINGLE COMMENTS WITH PUT METHOD
+ */
 const putSingleCommentUpdateController = asyncHandler(async (req, res) => {
   const { id } = req.params;
   const { status } = req.body;
@@ -58,6 +67,9 @@ const putSingleCommentUpdateController = asyncHandler(async (req, res) => {
     .json({ message: "Comment successfully updated.", comment });
 });
 
+/**
+ * THIS FUNCTION IS RETURN UPDATE A SINGLE COMMENTS WITH PATCH METHOD
+ */
 const patchSingleCommentUpdateController = asyncHandler(async (req, res) => {
   const { id } = req.params;
   const { bodyText } = req.body;
@@ -76,6 +88,10 @@ const patchSingleCommentUpdateController = asyncHandler(async (req, res) => {
     .status(201)
     .json({ status: 202, message: "Comment successfully updated." });
 });
+
+/**
+ * THIS FUNCTION WILL RETURN DELETE A SINGLE COMMENTS METHOD
+ */
 const deleteSingleCommentDeleteController = asyncHandler(async (req, res) => {
   const { id } = req.params;
 
