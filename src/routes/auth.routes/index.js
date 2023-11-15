@@ -3,6 +3,8 @@ const controller = require("../../controller/auth.controller");
 const validator = require("../../middleware/validator.middleware/validator.middleware");
 const Authentication = require("../../middleware/authentication.middleware");
 
+const isLogin = require("../../middleware/isLogin.middleware");
+
 router
   .route("/users/verify-email/:verificationToken")
   .get(controller.getVerifyEmailController);
@@ -13,11 +15,13 @@ router
 
 router.post(
   "/auth/login",
+  isLogin,
   validator.loginValidation,
   controller.postLoginController
 );
 router.post(
   "/auth/signup",
+  isLogin,
   validator.signupValidation,
   controller.postSignupController
 );
