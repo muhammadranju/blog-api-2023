@@ -2,6 +2,7 @@ const jwt = require("jsonwebtoken");
 function jwtVerifyToken(token) {
   return jwt.verify(token, process.env.ACCESS_TOKEN_SECRET);
 }
+
 const isLogin = (req, res, next) => {
   try {
     let token = req.headers?.authorization;
@@ -12,10 +13,42 @@ const isLogin = (req, res, next) => {
       return res.status(401).json({ error: "Return home" });
     }
 
-    console.log(user?.status);
     return next();
   } catch (error) {
-    next();
+    if (error.message === "jwt must be provided") {
+      return next();
+    }
+    if (error.message.includes("invalid token")) {
+      return res.status(403).json({
+        error: "you don't have access to change it.",
+        message: error.message,
+      });
+    }
+    if (error.message.includes("invalid signature")) {
+      return res.status(403).json({
+        error: "you don't have access to change it.",
+        message: error.message,
+      });
+    }
+    if (error.message.includes("Unexpected", "token", "end", "input")) {
+      return res.status(403).json({
+        error: "you don't have access to change it.",
+        message: error.message,
+      });
+    }
+    if (error.message.includes("jwt malformed")) {
+      return res.status(403).json({
+        error: "you don't have access to change it.",
+        message: error.message,
+      });
+    }
+    if (error.message.includes("jwt expired")) {
+      return res.status(400).json({
+        error: "you don't have access to change it.",
+        message: error.message,
+      });
+    }
+    return next();
   }
 };
 
