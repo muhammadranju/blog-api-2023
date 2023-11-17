@@ -10,7 +10,7 @@ const isLogin = (req, res, next) => {
     token = token?.split(" ")[1];
     const user = jwtVerifyToken(token);
     if (user?.status) {
-      return res.status(401).json({ error: "Return home" });
+      return res.status(403).json({ error: "Return home" });
     }
 
     return next();
@@ -43,10 +43,7 @@ const isLogin = (req, res, next) => {
       });
     }
     if (error.message.includes("jwt expired")) {
-      return res.status(400).json({
-        error: "you don't have access to change it.",
-        message: error.message,
-      });
+      return next();
     }
     return next();
   }
