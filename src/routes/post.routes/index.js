@@ -4,6 +4,8 @@ const Authentication = require("../../middleware/authentication.middleware");
 
 const controller = require("../../controller/post.controller");
 
+const upload = require("../../middleware/multer.middleware");
+
 router
   .route("/articles/:id")
   .get(controller.getSingleArticleController)
@@ -17,6 +19,16 @@ router
   .post(
     Authentication,
     validator.postValidator,
+    upload.fields([
+      {
+        name: "cover",
+        maxCount: 1,
+      },
+      {
+        name: "coverImage",
+        maxCount: 1,
+      },
+    ]),
     controller.postArticleController
   );
 

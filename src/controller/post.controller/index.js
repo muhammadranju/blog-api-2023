@@ -9,6 +9,7 @@ const ApiResponse = require("../../utils/ApiResponse");
 const asyncHandler = require("../../utils/asyncHandler");
 const errorFormatter = require("../../utils/errorFormatter/errorFormatter");
 const lowercaseText = require("../../utils/lowercaseText.utils/lowercaseText.utils");
+const uploadOnCloudinary = require("../../utils/cloudinary.utils");
 
 const myUtils = (title) => {
   const shortId3 = shortId().slice(0, 3);
@@ -60,24 +61,31 @@ const getArticlesController = asyncHandler(async (req, res, next) => {
  */
 const postArticleController = asyncHandler(async (req, res, next) => {
   const errors = validationResult(req).formatWith(errorFormatter);
-  if (!errors.isEmpty()) {
-    throw new ApiResponse(400, {}, errors.mapped());
-  }
+  // if (!errors.isEmpty()) {
+  //   throw new ApiResponse(400, {}, errors.mapped());
+  // }
 
-  let { title, bodyText, cover, tags } = req.body;
-
+  let { title, bodyText, tags } = Object.assign({}, req.body);
   const title_url = myUtils(title);
   tags = lowercaseText(tags, " ");
+
+  const coverLocalPath = req.files?.cover[0]?.path;
+  const coverImageLocalPath = req.files?.coverImage[0]?.path;
+
+  const cover = await uploadOnCloudinary(coverLocalPath);
+  const coverImage = await uploadOnCloudinary(coverImageLocalPath);
 
   const post = await Post.createPost({
     title,
     title_url,
     bodyText,
-    cover,
+    cover: cover.url,
+    coverImage: coverImage?.url || "",
     tags,
     author: req.user._id,
   });
 
+  console.log(post);
   await post.save();
 
   return res.status(201).json({

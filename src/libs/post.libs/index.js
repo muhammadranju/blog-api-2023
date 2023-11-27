@@ -85,6 +85,7 @@ const createPost = async ({
   title_url,
   bodyText,
   cover,
+  coverImage,
   tags,
   author,
 }) => {
@@ -93,6 +94,7 @@ const createPost = async ({
     title_url,
     bodyText,
     cover,
+    coverImage,
     tags,
     author,
   });
