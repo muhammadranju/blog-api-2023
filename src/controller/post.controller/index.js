@@ -35,7 +35,7 @@ const getArticlesController = asyncHandler(async (req, res, next) => {
   });
 
   if (posts.length === 0) {
-    throw new ApiResponse(404, "fail", "The post was not found");
+    throw new ApiResponse(400, {}, "Post not available yet.");
   }
 
   return res.status(200).json({
@@ -108,7 +108,7 @@ const getSingleArticleController = asyncHandler(async (req, res, next) => {
   const findOnePost = await Post.findPost({ id });
 
   if (!findOnePost) {
-    throw new ApiResponse(404, { title_url: id }, "This post not was found.");
+    throw new ApiResponse(400, { title_url: id }, "Post not available yet.");
   }
   const comment = await Comment.findCommentIsApproved(
     { post: findOnePost.id },

@@ -75,6 +75,7 @@ const findPost = async ({ id }) => {
       path: "author",
       select: "username",
     })
+    .populate({ path: "comments" })
 
     .select("-__v")
     .exec();
