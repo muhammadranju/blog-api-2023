@@ -2,6 +2,7 @@ const { Schema, model } = require("mongoose");
 const bcrypt = require("bcrypt");
 const crypto = require("crypto");
 const jwt = require("jsonwebtoken");
+const mongooseAggregatePaginate = require("mongoose-aggregate-paginate-v2");
 
 const {
   UserRolesEnum,
@@ -130,5 +131,6 @@ userSchema.methods.generateTemporaryToken = function () {
   return { unHashedToken, hashedToken, tokenExpiry };
 };
 
+userSchema.plugin(mongooseAggregatePaginate);
 const User = model(ModelRefNames.User, userSchema);
 module.exports = User;
