@@ -1,6 +1,6 @@
 const { Schema, model } = require("mongoose");
 const { PostStatusEnum, ModelRefNames } = require("../../constants");
-
+const mongooseAggregatePaginate = require("mongoose-aggregate-paginate-v2");
 const postSchema = new Schema(
   {
     title: {
@@ -56,6 +56,8 @@ const postSchema = new Schema(
   },
   { timestamps: true }
 );
+
+postSchema.plugin(mongooseAggregatePaginate);
 
 const Post = model(ModelRefNames.Post, postSchema);
 

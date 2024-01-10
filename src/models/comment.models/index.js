@@ -1,5 +1,7 @@
 const { Schema, model } = require("mongoose");
 const { UserCommentStatusEnum, ModelRefNames } = require("../../constants");
+const mongooseAggregatePaginate = require("mongoose-aggregate-paginate-v2");
+
 const commentSchema = new Schema(
   {
     author: {
@@ -29,6 +31,8 @@ const commentSchema = new Schema(
   },
   { timestamps: true }
 );
+
+commentSchema.plugin(mongooseAggregatePaginate);
 
 const Comment = model(ModelRefNames.Comment, commentSchema);
 
