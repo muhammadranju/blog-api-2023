@@ -1,9 +1,19 @@
-FROM node
+FROM node:18 as builder
 
-COPY package.json package.json
-COPY package-lock.json package-lock.json
-COPY index.js index.js
+WORKDIR /build
 
+COPY package*.json .
 RUN npm install
 
-ENTRYPOINT [ "node", "index.js" ]
+COPY src/ src/
+
+RUN npm run build
+
+FROM node:18 as runner
+
+WORKDIR /app
+
+COPY --from=builder build/package*.json .
+COPY --from=builder build/node_modules node_modules
+
+CMD [ "npm", "start" ]
