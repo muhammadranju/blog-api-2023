@@ -6,13 +6,13 @@ const MONGODB_URI_LOCAL = process.env.MONGODB_URI_LOCAL; // REPLACE WITH YOUR LO
 
 async function connectDB() {
   try {
-    const connectInstance = await mongoose.connect(
-      `${MONGODB_URI_LOCAL}/${DATABASE_NAME}`
-    );
-
     // const connectInstance = await mongoose.connect(
-    //   `${MONGODB_URI}/${DATABASE_NAME}${DATABASE_QUERY}`
+    //   `${MONGODB_URI_LOCAL}/${DATABASE_NAME}`
     // );
+
+    const connectInstance = await mongoose.connect(
+      `${MONGODB_URI}/${DATABASE_NAME}${DATABASE_QUERY}`
+    );
     console.log(
       `MongoDB connected!! DB HOST: ${connectInstance.connection.host}`
     );
