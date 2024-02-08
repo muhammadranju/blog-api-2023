@@ -32,4 +32,6 @@ router
     controller.postArticleController
   );
 
+router.route("/demo/:tags").get(controller.demoPostController);
+
 module.exports = router;

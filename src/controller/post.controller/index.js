@@ -1,6 +1,8 @@
 const { validationResult } = require("express-validator");
 const shortId = require("shortid");
 
+const AllPost = require("../../models/post.models");
+
 const Post = require("../../libs/post.libs");
 const Comment = require("../../libs/comment.libs");
 
@@ -184,6 +186,34 @@ const deleteSingleArticlesDeleteController = asyncHandler(
   }
 );
 
+const demoPostController = asyncHandler(async (req, res, next) => {
+  try {
+    const { tag } = req.params;
+    const tags = await AllPost.aggregate([
+      {
+        $group: {
+          _id: "$title",
+          countPost: { $sum: 1 },
+        },
+      },
+      {
+        $sort: {
+          
+        }
+      }
+    ]);
+
+    // const tags = await AllPost.find();
+    const data = "Hello";
+    return res.status(200).json({
+      count: tags.length,
+      tags,
+    });
+  } catch (error) {
+    next(error);
+  }
+});
+
 module.exports = {
   getArticlesController,
   postArticleController,
@@ -191,4 +221,5 @@ module.exports = {
   putSingleArticlesUpdateController,
   patchSingleArticleUpdateController,
   deleteSingleArticlesDeleteController,
+  demoPostController,
 };
